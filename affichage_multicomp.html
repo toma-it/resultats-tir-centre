@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --primary-bordeaux: #4a2c40; 
+            --primary-bordeaux: #4A90E2; 
             --bg-pastel: #f8fafc;
             --text-dark: #0f172a;
             --text-light: #64748b;
@@ -268,21 +268,55 @@
                                         <th style="width: 50px;">Pl.</th>
                                         <th>Nom Prénom</th>
                                         <th>Club</th>
-                                        <th style="text-align: right; width: 100px;">Score</th>
+                                        <th style="text-align: center; width: 220px;">Séries</th>
+                                        <th style="text-align: right; width: 100px;">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>`;
 
-                    const rankedShooters = tree[disc][cat].sort((a, b) => (b.score || 0) - (a.score || 0));
+                    const rankedShooters = tree[disc][cat].sort((a, b) => {
+                        // 1. Tri par Score global
+                        const scoreA = a.score || 0;
+                        const scoreB = b.score || 0;
+                        if (scoreB !== scoreA) return scoreB - scoreA;
+
+                        // 2. Égalité : Tri par Mouches
+                        const mouchesA = a.mouches || 0;
+                        const mouchesB = b.mouches || 0;
+                        if (b.mouches !== a.mouches) return mouchesB - mouchesA;
+
+                        // 3. Égalité persistante : Remonter les séries (de la dernière vers la première)
+                        const seriesA = a.series || [];
+                        const seriesB = b.series || [];
+                        const maxSeries = Math.max(seriesA.length, seriesB.length);
+
+                        // On boucle à l'envers (ex: de l'index 5 à 0 pour 6 séries)
+                        for (let k = maxSeries - 1; k >= 0; k--) {
+                            const sA = seriesA[k] || 0;
+                            const sB = seriesB[k] || 0;
+                            if (sB !== sA) return sB - sA;
+                        }
+
+                        return 0; // Égalité absolue si toutes les séries et mouches sont identiques
+                    });
 
                     rankedShooters.forEach((s, index) => {
                         const displayScore = s.score !== undefined ? s.score : 0;
                         const medal = (index === 0) ? "🥇 " : (index === 1) ? "🥈 " : (index === 2) ? "🥉 " : "";
+
+                        const suffixeMouches = s.mouches > 0 ? ` <small style="color:var(--text-muted); font-weight:normal;"> /${s.mouches}x</small>` : "";
+
+                        let seriesDisplay = "-";
+                        if (s.series && s.series.length > 0) {
+                            seriesDisplay = s.series.map(val => `<span style="display:inline-block; padding: 2px 5px; background:#e2e8f0; margin:0 2px; border-radius:4px; font-size:0.9rem; font-weight:600;">${val}</span>`).join('');
+                        }
+
                         html += `<tr>
                                     <td class="rank-cell">${index + 1}</td>
                                     <td class="name-cell">${medal}${s.lastName} ${s.firstName}</td>
                                     <td class="club-cell">${s.club || '-'}</td>
-                                    <td class="score-cell">${displayScore}</td>
+                                    <td style="text-align: center;">${seriesDisplay}</td>
+                                    <td class="score-cell">${displayScore}${suffixeMouches}</td>
                                  </tr>`;
                     });
                     html += `</tbody></table></div>`;

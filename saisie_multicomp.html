@@ -515,7 +515,7 @@
             </div>
         </div>
         <div class="header-actions">
-            <span class="version-tag">v2.0</span>
+            <span class="version-tag">v1.0</span>
             <button type="button" id="btnToggleImport" class="btn-toggle-import">
                 <span>🪄</span> Import Excel
             </button>
@@ -525,7 +525,7 @@
     </header>
 
     <!-- IMPORT BLOCK -->
-    <div class="panel panel-import" id="importBlock">
+    <!-- <div class="panel panel-import" id="importBlock">
         <div class="panel-title"><span>⚡</span> Importation Rapide — Copier-Coller Excel</div>
         <div class="import-hint">
             Copiez vos colonnes depuis Excel et collez-les ci-dessous.<br>
@@ -535,6 +535,22 @@
         <div class="btn-row" style="margin-top:12px;">
             <button type="button" class="btn btn-import-run" onclick="processImport()">
                 🚀 Lancer l'importation automatique
+            </button>
+        </div>
+    </div> -->
+
+    <!-- IMPORT BLOCK MODIFIÉ -->
+    <div class="panel panel-import" id="importBlock">
+        <div class="panel-title"><span>⚡</span> Importation Fichier CSV (Engagements & Résultats)</div>
+        <div class="import-hint">
+            Sélectionnez un fichier <strong>.csv</strong> (Séparateur : Point-virgule <code>;</code>).<br>
+            <strong>Colonnes requises :</strong> Nom ; Prenom ; Club ; Categorie ; Epreuve<br>
+            Optionnel pour les scores : <strong>S1 ; S2 ; S3 ; S4 ; S5 ; S6</strong> (les séries vides seront ignorées).
+        </div>
+        <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 15px; width: 100%;">
+        <div class="btn-row">
+            <button type="button" class="btn btn-import-run" onclick="processCSVImport()">
+                🚀 Lancer l'importation du fichier CSV
             </button>
         </div>
     </div>
@@ -723,9 +739,9 @@
         
         if (type === "ISSF2550") {
             if (discValue.match(/^(501|502)/)) {
-                cats = ["Minime F", "Minime G", "Cadet F", "Cadet G", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"];
+                cats = ["Minime Fille", "Minime Garçon", "Cadet Fille", "Cadet Garçon", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"];
             } else if (discValue.match(/^(250|251|252|253|500)/)) {
-                cats = ["Cadet F", "Cadet G", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"];
+                cats = ["Cadet Fille", "Cadet Garçon", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"];
             } else if (discValue.match(/^(27|57)/)) {
                 cats = ["Senior 1"]; 
             }
@@ -734,52 +750,165 @@
         document.getElementById('newCategorie').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
-    function processImport() {
-        const text = document.getElementById('importArea').value.trim();
-        if (!text) return alert("Veuillez coller des données provenant d'Excel dans la zone.");
-        const lines = text.split('\n');
-        let count = 0;
-        let doublons = 0;
+    // function processImport() {
+    //     const text = document.getElementById('importArea').value.trim();
+    //     if (!text) return alert("Veuillez coller des données provenant d'Excel dans la zone.");
+    //     const lines = text.split('\n');
+    //     let count = 0;
+    //     let doublons = 0;
 
-        lines.forEach(line => {
-            const cols = line.split('\t');
-            if (cols.length >= 4) { 
-                let nom = cols[0].trim().toUpperCase();
-                let prenom = cols[1].trim();
-                let club = cols[2].trim() || "-";
-                let rawDisc = cols[3].trim();
-                let cat = cols[4] ? cols[4].trim() : "Senior 1";
+    //     lines.forEach(line => {
+    //         const cols = line.split('\t');
+    //         if (cols.length >= 4) { 
+    //             let nom = cols[0].trim().toUpperCase();
+    //             let prenom = cols[1].trim();
+    //             let club = cols[2].trim() || "-";
+    //             let rawDisc = cols[3].trim();
+    //             let cat = cols[4] ? cols[4].trim() : "Senior 1";
                 
-                let fullDisc = rawDisc;
+    //             let fullDisc = rawDisc;
+    //             for (let type in dataRef) {
+    //                 let found = dataRef[type].disc.find(d => d.startsWith(rawDisc));
+    //                 if (found) { fullDisc = found; break; }
+    //             }
+
+    //             if (nom && prenom) {
+    //                 let existeDeja = shootersData.some(s => s.lastName === nom && s.firstName === prenom && s.discipline === fullDisc);
+                    
+    //                 if (existeDeja) {
+    //                     doublons++;
+    //                 } else {
+    //                     const s = { lastName: nom, firstName: prenom, club: club, discipline: fullDisc, category: cat, score: 0 };
+    //                     db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
+    //                     const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
+    //                     db.ref('Ligue_Tireurs_Archive/' + key).update({ lastName: nom, firstName: prenom, club: club });
+    //                     count++;
+    //                 }
+    //             }
+    //         }
+    //     });
+        
+    //     if (count > 0 || doublons > 0) {
+    //         let msg = "";
+    //         if (count > 0) msg += `🚀 Succès ! ${count} engagements ont été importés.\n`;
+    //         if (doublons > 0) msg += `⚠️ Note : ${doublons} doublons ignorés (déjà inscrits).`;
+    //         alert(msg);
+    //         document.getElementById('importArea').value = '';
+    //         document.getElementById('btnToggleImport').click(); 
+    //     }
+    // }
+
+    function normaliserCategorie(catCSV) {
+        if (!catCSV) return "Non trouvée";
+        const clean = catCSV.trim().toUpperCase();
+        
+        const mapping = {
+            // Seniors / Dames
+            "S1": "Senior 1", "S2": "Senior 2", "S3": "Senior 3",
+            "D1": "Dame 1", "D2": "Dame 2", "D3": "Dame 3",
+            
+            // Jeunes
+            "PG": "Poussin Garçon", "PF": "Poussin Fille",
+            "BG": "Benjamin Garçon", "BF": "Benjamin Fille",
+            "MG": "Minime Garçon", "MF": "Minime Fille",
+            "CG": "Cadet Garçon", "CF": "Cadet Fille",
+            "JG": "Junior Garçon", "JF": "Junior Fille"
+        };
+
+        return mapping[clean] || catCSV; // Retourne le mapping ou le texte d'origine si aucun match
+    }
+
+    function processCSVImport() {
+        const fileInput = document.getElementById('csvFileInput');
+        const file = fileInput.files[0];
+        
+        if (!file) return alert("Veuillez sélectionner un fichier CSV au préalable.");
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const text = e.target.result;
+            const lines = text.split('\n');
+            if(lines.length <= 1) return alert("Fichier CSV vide ou invalide.");
+
+            const headers = lines[0].split(';').map(h => h.trim().toUpperCase());
+            
+            let countInscriptions = 0;
+            let countScores = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const cols = lines[i].split(';');
+
+                let nom = cols[headers.indexOf("Nom")] ? cols[headers.indexOf("Nom")].trim().toUpperCase() : "";
+                let prenom = cols[headers.indexOf("Prenom")] ? cols[headers.indexOf("Prenom")].trim() : "";
+                let club = cols[headers.indexOf("Association Nom")] ? cols[headers.indexOf("Association Nom")].trim() : "-";
+                let rawCat = cols[headers.indexOf("CatÃ©gorie E")] ? cols[headers.indexOf("CatÃ©gorie E")].trim() : "";
+                let epreuve = cols[headers.indexOf("Epreuve")] ? cols[headers.indexOf("Epreuve")].trim() : "";
+
+                if (!nom || !prenom || !epreuve) continue;
+
+                // Normalisation de la catégorie (ex: S3 -> Senior 3)
+                let cat = normaliserCategorie(rawCat);
+
+                let fullDisc = epreuve;
                 for (let type in dataRef) {
-                    let found = dataRef[type].disc.find(d => d.startsWith(rawDisc));
+                    let found = dataRef[type].disc.find(d => d.startsWith(epreuve));
                     if (found) { fullDisc = found; break; }
                 }
 
-                if (nom && prenom) {
-                    let existeDeja = shootersData.some(s => s.lastName === nom && s.firstName === prenom && s.discipline === fullDisc);
-                    
-                    if (existeDeja) {
-                        doublons++;
-                    } else {
-                        const s = { lastName: nom, firstName: prenom, club: club, discipline: fullDisc, category: cat, score: 0 };
-                        db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
-                        const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
-                        db.ref('Ligue_Tireurs_Archive/' + key).update({ lastName: nom, firstName: prenom, club: club });
-                        count++;
+                // Gestion des Séries (S1 à S6)
+                let series = [];
+                let totalScore = 0;
+                let hasScores = false;
+
+                for (let sIdx = 1; sIdx <= 6; sIdx++) {
+                    let headerName = "SÃ©rie " + sIdx;
+                    let colPos = headers.indexOf(headerName);
+                    if (colPos !== -1 && cols[colPos] && cols[colPos].trim() !== "") {
+                        let valSerie = parseFloat(cols[colPos].trim().replace(',', '.'));
+                        if (!isNaN(valSerie)) {
+                            series.push(valSerie);
+                            totalScore += valSerie;
+                            hasScores = true;
+                        }
                     }
                 }
+
+                // Gestion de la colonne Mouches
+                let mouches = 0;
+                let idxMouches = headers.indexOf("Nombre Mouches");
+                
+                if (idxMouches !== -1 && cols[idxMouches] && cols[idxMouches].trim() !== "") {
+                    let valMouches = parseInt(cols[idxMouches].trim(), 10);
+                    if (!isNaN(valMouches)) mouches = valMouches;
+                }
+
+                let existingShooter = shootersData.find(s => s.lastName === nom && s.firstName === prenom && s.discipline === fullDisc);
+
+                let shooterPayload = {
+                    lastName: nom,
+                    firstName: prenom,
+                    club: club,
+                    discipline: fullDisc,
+                    category: cat,
+                    score: hasScores ? totalScore : (existingShooter ? (existingShooter.score || 0) : 0),
+                    series: series.length > 0 ? series : (existingShooter && existingShooter.series ? existingShooter.series : []),
+                    mouches: hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0)
+                };
+
+                if (existingShooter) {
+                    db.ref(CLUB_PATH + '/' + compId + '/shooters/' + existingShooter.id).update(shooterPayload);
+                    if (hasScores) countScores++;
+                } else {
+                    db.ref(CLUB_PATH + '/' + compId + '/shooters').push(shooterPayload);
+                    countInscriptions++;
+                }
             }
-        });
-        
-        if (count > 0 || doublons > 0) {
-            let msg = "";
-            if (count > 0) msg += `🚀 Succès ! ${count} engagements ont été importés.\n`;
-            if (doublons > 0) msg += `⚠️ Note : ${doublons} doublons ignorés (déjà inscrits).`;
-            alert(msg);
-            document.getElementById('importArea').value = '';
-            document.getElementById('btnToggleImport').click(); 
-        }
+
+            alert(`📊 Rapport d'importation :\n- ${countInscriptions} nouveaux tireurs engagés.\n- ${countScores} fiches de scores (avec mouches) mises à jour.`);
+            fileInput.value = "";
+        };
+        reader.readAsText(file, 'UTF-8');
     }
 
     function addShooter() {
