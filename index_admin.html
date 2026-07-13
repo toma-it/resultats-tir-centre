@@ -13,45 +13,20 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
   <style>
-    /* :root {
-      --sidebar-bg: #5B8FB9;
-      --sidebar-border: #4A90E2;
-      --sidebar-accent: #ffffff;
-      --sidebar-muted: rgba(243, 216, 147, 0.55);
-      --bg: #faf5ed;
-      --surface: #ffffff;
-      --surface2: #faf4ec;
-      --border: #efe7da;
-      --text: #0f1923;
-      --text-muted: #64748b;
-      --text-dim: #a0aec0;
-      --green: #10b981; --green-bg: #ecfdf5;
-      --purple: #8b5cf6; --purple-bg: #f5f3ff;
-      --blue: #0ea5e9; --blue-bg: #f0f9ff;
-      --red: #ef4444;
-      --accent: #c1271d;
-      --radius: 8px;
-      --radius-lg: 16px;
-      --radius-xl: 22px;
-    } */
-
     :root {
-      /* Barre latérale (Sidebar) coordonnée */
-      --sidebar-bg: #1E40AF;       /* Bleu Royal identique à l'accent principal */
-      --sidebar-border: #1D4ED8;   /* Bleu Royal légèrement plus soutenu */
-      --sidebar-accent: #3B82F6;   /* Bleu vif pour les éléments actifs */
+      /* Thème Lumineux et Contrasté */
+      --sidebar-bg: #1e3a8a;       /* Bleu nuit structuré pour le menu latéral */
+      --sidebar-border: #172554;
+      --sidebar-accent: #3b82f6;
       
-      /* Corps de la page */
-      --bg: #F8FAFC;               /* Même fond clair que la page de saisie */
-      --surface: #FFFFFF;          /* Cartes de compétitions blanches */
-      --border: #E2E8F0;           /* Bordures coordonnées */
+      --bg: #f8fafc;               /* Fond de page gris-bleu très clair */
+      --surface: #ffffff;          /* Cartes blanches */
+      --border: #cbd5e1;           /* Bordures bien visibles */
       
-      /* Typographie */
-      --text-main: #0F172A;        /* Ardoise foncé */
-      --text-muted: #64748B;       /* Gris secondaire */
+      --text-main: #0f172a;        /* Texte principal Ardoise foncé (haute lisibilité) */
+      --text-muted: #475569;       /* Texte secondaire */
       
-      /* Actions */
-      --danger: #EF4444;           /* Rouge pour les suppressions */
+      --danger: #dc2626;
       --radius: 8px;
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -263,7 +238,7 @@
     }
 
     /* ═══ ACTION BUTTONS ═══ */
-    .actions-grid {
+    /* .actions-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -310,7 +285,71 @@
       padding: 9px;
       border-radius: var(--radius);
     }
-    .btn-del:hover { color: var(--red); border-color: #fecaca; background: #fef2f2; }
+    .btn-del:hover { color: var(--red); border-color: #fecaca; background: #fef2f2; } */
+
+    /* ═══ ACTION BUTTONS ═══ */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .btn-act {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    /* Application de fonds opaques obligatoires (actifs au repos ET au survol) */
+    .btn-saisie {
+      background-color: #3b82f6 !important;
+      color: #ffffff !important;
+    }
+    .btn-saisie:hover {
+      background-color: #1d4ed8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.2);
+    }
+
+    .btn-qr {
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+    }
+    .btn-qr:hover {
+      background-color: #334155 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-tv {
+      background-color: #10b981 !important;
+      color: #ffffff !important;
+    }
+    .btn-tv:hover {
+      background-color: #047857 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 6px -1px rgba(4, 120, 87, 0.2);
+    }
+
+    .btn-del {
+      background-color: #ef4444 !important;
+      color: #ffffff !important;
+    }
+    .btn-del:hover {
+      background-color: #b91c1c !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 6px -1px rgba(185, 28, 28, 0.2);
+    }
 
     /* ═══ MODALS ═══ */
     .modal {
@@ -455,7 +494,7 @@
     <div class="logo-area">
       <img src="logo.png" id="clubLogo"
            onerror="this.style.display='none'" alt="Logo du club">
-      <div><span id="clubNameDisplay"></span></div>
+      <div class="logo-name"><span id="clubNameDisplay"></span></div>
     </div>
     <button class="btn-create" onclick="openCreateModal()">+ Nouvelle Compétition</button>
     <button class="btn-logout" onclick="doLogout()" style="margin-top:auto;">⎋ Déconnexion</button>
