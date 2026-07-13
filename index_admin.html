@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.0 — 13/07/2026 -->
+<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.5 — 13/07/2026 -->
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -15,11 +15,11 @@
   <style>
     :root {
       /* Thème Lumineux et Contrasté */
-      --sidebar-bg: #1e3a8a;       /* Bleu nuit structuré pour le menu latéral */
-      --sidebar-border: #172554;
-      --sidebar-accent: #3b82f6;
+      --sidebar-bg: #8dafd8;       /* Bleu nuit structuré pour le menu latéral */
+      --sidebar-border: #042247;
+      --sidebar-accent: #4283d3;
       
-      --bg: #f8fafc;               /* Fond de page gris-bleu très clair */
+      --bg: #fffdef;               /* Fond de page gris-bleu très clair */
       --surface: #ffffff;          /* Cartes blanches */
       --border: #cbd5e1;           /* Bordures bien visibles */
       
@@ -84,7 +84,7 @@
 
     .btn-create {
       background: var(--sidebar-accent);
-      color: #3a0e14;
+      color: #0e1a3a;
       padding: 13px 16px;
       border: none;
       border-radius: var(--radius-lg);
@@ -95,12 +95,12 @@
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 4px 20px rgba(217,154,28,0.35);
+      box-shadow: 0 4px 20px rgba(28, 126, 217, 0.35);
       width: 100%;
     }
     .btn-create:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(217,154,28,0.5);
+      box-shadow: 0 8px 28px rgba(28, 110, 217, 0.5);
       background: #e6b53c;
     }
 
@@ -498,7 +498,7 @@
     </div>
     <button class="btn-create" onclick="openCreateModal()" style="background-color: #ffffff; color: var(--primary, #333); font-weight: bold;">+ Nouvelle Compétition</button>
     <button class="btn-logout" onclick="doLogout()" style="margin-top:auto;">⎋ Déconnexion</button>
-    <div class="sidebar-footer">LIGUE CENTRE-VAL DE LOIRE · v1.0 — 13/07/2026</div>
+    <div class="sidebar-footer">LIGUE CENTRE-VAL DE LOIRE · v1.5 — 13/07/2026</div>
   </aside>
 
   <main class="main-content">

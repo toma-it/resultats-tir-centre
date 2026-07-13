@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.0 — 13/07/2026 -->
+<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.5 — 13/07/2026 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -9,8 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --primary-bordeaux: #1E40AF; /* Devient le Bleu Royal officiel de la Ligue */
-            --bg-pastel: #F8FAFC;         /* Même fond frais et lumineux pour l'affichage TV */
+            --primary-bordeaux: #8dafd8; /* Devient le Bleu Royal officiel de la Ligue */
+            --bg-pastel: #fffdef;         /* Même fond frais et lumineux pour l'affichage TV */
             --text-dark: #0F172A;         /* Même couleur de texte principale */
             --text-light: #64748B;        /* Même couleur de texte secondaire */
             
@@ -76,7 +76,7 @@
         .comp-name {
             margin-top: 5px;
             font-size: 1.1rem;
-            color: #ffb8d9;
+            color: #fcfcfc;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -95,7 +95,7 @@
         }
 
         .discipline-title {
-            color: #c0442a;
+            color: #042247;
             border-bottom: none;
             padding: 15px 10px;
             margin-top: 0;
@@ -104,10 +104,10 @@
             font-weight: 800;
             position: sticky;
             top: 145px; 
-            background: #fde8e0;
+            background: #b0c7e2;
             border-radius: 8px;
             padding-left: 18px;
-            border-left: 6px solid #e8724a;
+            border-left: 6px solid #4283d3;
             border-bottom: none;
             z-index: 90; 
             box-shadow: 0 10px 10px -10px rgba(0,0,0,0.1);
@@ -161,9 +161,9 @@
             color: var(--text-light);
         }
 
-        tr:nth-child(1) .rank-cell { color: #d97706; font-size: 1.3rem; }
-        tr:nth-child(2) .rank-cell { color: #475569; font-size: 1.2rem; }
-        tr:nth-child(3) .rank-cell { color: #b45309; font-size: 1.15rem; }
+        tr:nth-child(1) .rank-cell { color: #d69509; font-size: 1.3rem; }
+        tr:nth-child(2) .rank-cell { color: #45484b; font-size: 1.2rem; }
+        tr:nth-child(3) .rank-cell { color: #8d4208; font-size: 1.15rem; }
 
         .name-cell { font-weight: 600; }
         .club-cell { color: var(--text-light); }
@@ -191,8 +191,8 @@
     <header>
         <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
         <div class="header-center">
-            <h1>🏆 PALMARÈS PROVISOIRE</h1>
-            <div class="version-tag">v1.0</div>
+            <h1>PALMARÈS PROVISOIRE</h1>
+            <div class="version-tag">v1.5</div>
             <div id="compTitle" class="comp-name">Chargement...</div>
         </div>
         <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
