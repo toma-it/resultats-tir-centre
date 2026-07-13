@@ -830,6 +830,7 @@
             const lines = text.split('\n');
             if(lines.length <= 1) return alert("Fichier CSV vide ou invalide.");
 
+            // Passage de tous les en-têtes en MAJUSCULES
             const headers = lines[0].split(';').map(h => h.trim().toUpperCase());
             
             let countInscriptions = 0;
@@ -839,11 +840,11 @@
                 if (!lines[i].trim()) continue;
                 const cols = lines[i].split(';');
 
-                let nom = cols[headers.indexOf("Nom")] ? cols[headers.indexOf("Nom")].trim().toUpperCase() : "";
-                let prenom = cols[headers.indexOf("Prenom")] ? cols[headers.indexOf("Prenom")].trim() : "";
-                let club = cols[headers.indexOf("Association Nom")] ? cols[headers.indexOf("Association Nom")].trim() : "-";
-                let rawCat = cols[headers.indexOf("Catégorie E")] ? cols[headers.indexOf("Catégorie E")].trim() : "";
-                let epreuve = cols[headers.indexOf("Epreuve")] ? cols[headers.indexOf("Epreuve")].trim() : "";
+                let nom = cols[headers.indexOf("NOM")] ? cols[headers.indexOf("NOM")].trim().toUpperCase() : "";
+                let prenom = cols[headers.indexOf("PRENOM")] ? cols[headers.indexOf("PRENOM")].trim() : "";
+                let club = cols[headers.indexOf("ASSOCIATION NOM")] ? cols[headers.indexOf("ASSOCIATION NOM")].trim() : "-";
+                let rawCat = cols[headers.indexOf("CATÉGORIE E")] ? cols[headers.indexOf("CATÉGORIE E")].trim() : "";
+                let epreuve = cols[headers.indexOf("EPREUVE")] ? cols[headers.indexOf("EPREUVE")].trim() : "";
 
                 if (!nom || !prenom || !epreuve) continue;
 
@@ -862,7 +863,7 @@
                 let hasScores = false;
 
                 for (let sIdx = 1; sIdx <= 6; sIdx++) {
-                    let headerName = "Série " + sIdx;
+                    let headerName = "SÉRIE " + sIdx;
                     let colPos = headers.indexOf(headerName);
                     if (colPos !== -1 && cols[colPos] && cols[colPos].trim() !== "") {
                         let valSerie = parseFloat(cols[colPos].trim().replace(',', '.'));
@@ -876,7 +877,7 @@
 
                 // Gestion de la colonne Mouches
                 let mouches = 0;
-                let idxMouches = headers.indexOf("Nombre Mouches");
+                let idxMouches = headers.indexOf("NOMBRE MOUCHES");
                 
                 if (idxMouches !== -1 && cols[idxMouches] && cols[idxMouches].trim() !== "") {
                     let valMouches = parseInt(cols[idxMouches].trim(), 10);
