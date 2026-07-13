@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- LIGUE CENTRE-VAL DE LOIRE — version v1.5 — 13/07/2026 -->
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,10 +11,13 @@
     <style>
         :root {
             --primary-bordeaux: #8dafd8;
-            --bg-pastel: #fffdef;         /* Même fond frais et lumineux pour l'affichage TV */
-            --text-dark: #0F172A;         /* Même couleur de texte principale */
-            --text-light: #64748B;        /* Même couleur de texte secondaire */
-            
+            --bg-pastel: #fffdef;
+            /* Même fond frais et lumineux pour l'affichage TV */
+            --text-dark: #0F172A;
+            /* Même couleur de texte principale */
+            --text-light: #64748B;
+            /* Même couleur de texte secondaire */
+
             /* Éléments de tableau */
             --surface: #FFFFFF;
             --border: #E2E8F0;
@@ -23,7 +27,9 @@
             --discipline-offset: 215px;
         }
 
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -95,7 +101,7 @@
         }
 
         #resultsContainer {
-            padding-bottom: 60vh; 
+            padding-bottom: 60vh;
         }
 
         .discipline-section {
@@ -122,8 +128,8 @@
             padding-left: 18px;
             border-left: 6px solid #4283d3;
             border-bottom: none;
-            z-index: 90; 
-            box-shadow: 0 10px 10px -10px rgba(0,0,0,0.1);
+            z-index: 90;
+            box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.1);
         }
 
         .category-block {
@@ -143,7 +149,7 @@
             position: sticky;
             top: var(--discipline-offset);
             z-index: 80;
-            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         .table-scroll {
@@ -183,12 +189,28 @@
             color: var(--text-light);
         }
 
-        tr:nth-child(1) .rank-cell { color: #d69509; font-size: 1.3rem; }
-        tr:nth-child(2) .rank-cell { color: #45484b; font-size: 1.2rem; }
-        tr:nth-child(3) .rank-cell { color: #8d4208; font-size: 1.15rem; }
+        tr:nth-child(1) .rank-cell {
+            color: #d69509;
+            font-size: 1.3rem;
+        }
 
-        .name-cell { font-weight: 600; }
-        .club-cell { color: var(--text-light); }
+        tr:nth-child(2) .rank-cell {
+            color: #45484b;
+            font-size: 1.2rem;
+        }
+
+        tr:nth-child(3) .rank-cell {
+            color: #8d4208;
+            font-size: 1.15rem;
+        }
+
+        .name-cell {
+            font-weight: 600;
+        }
+
+        .club-cell {
+            color: var(--text-light);
+        }
 
         .score-cell {
             text-align: right;
@@ -218,7 +240,8 @@
             border-radius: 50%;
             font-size: 1.4rem;
             font-weight: bold;
-            font-family: 'Georgia', serif; /* Donne un bel aspect élégant au "i" */
+            font-family: 'Georgia', serif;
+            /* Donne un bel aspect élégant au "i" */
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             display: flex;
@@ -239,7 +262,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(15, 23, 42, 0.6); /* Teinte sombre adoucie */
+            background-color: rgba(15, 23, 42, 0.6);
+            /* Teinte sombre adoucie */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -370,7 +394,7 @@
             border-radius: 50%;
             background: var(--primary-bordeaux);
             border: 3px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
             cursor: pointer;
         }
 
@@ -380,7 +404,7 @@
             border-radius: 50%;
             background: var(--primary-bordeaux);
             border: 3px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
             cursor: pointer;
         }
 
@@ -521,9 +545,17 @@
                 width: 34px;
             }
 
-            tr:nth-child(1) .rank-cell { font-size: 1rem; }
-            tr:nth-child(2) .rank-cell { font-size: 0.95rem; }
-            tr:nth-child(3) .rank-cell { font-size: 0.9rem; }
+            tr:nth-child(1) .rank-cell {
+                font-size: 1rem;
+            }
+
+            tr:nth-child(2) .rank-cell {
+                font-size: 0.95rem;
+            }
+
+            tr:nth-child(3) .rank-cell {
+                font-size: 0.9rem;
+            }
 
             .score-cell {
                 font-size: 1rem;
@@ -596,242 +628,248 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <header>
-        <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
-        <div class="header-center">
-            <h1>PALMARÈS PROVISOIRE</h1>
-            <div class="version-tag">v1.5</div>
-            <div id="compTitle" class="comp-name">Chargement...</div>
-        </div>
-        <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
-    </header>
-
-    <div id="resultsContainer">
-        <div class="no-data">Connexion au serveur de résultats en cours...</div>
-    </div>
-</div>
-
-<button class="info-btn" id="openHelpBtn" title="Aide au défilement">i</button>
-
-<div class="modal-overlay" id="helpModal">
-    <div class="modal-content">
-        <button class="modal-close" id="closeHelpBtn">&times;</button>
-        <h3 class="modal-title">⚙️ Régler la vitesse de défilement</h3>
-        <div class="modal-body">
-            <div class="speed-control">
-                <div class="speed-control-labels">
-                    <span>⚡ Rapide</span>
-                    <span id="speedValueDisplay" class="speed-value">20</span>
-                    <span>Lent 🐢</span>
-                </div>
-                <input type="range" id="speedSlider" class="speed-slider" min="5" max="60" step="1" value="20">
-                <p class="speed-hint">Ajuste le défilement en direct, pour cette page uniquement (non enregistré).</p>
+    <div class="container">
+        <header>
+            <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
+            <div class="header-center">
+                <h1>PALMARÈS PROVISOIRE</h1>
+                <div class="version-tag">v1.5</div>
+                <div id="compTitle" class="comp-name">Chargement...</div>
             </div>
-            <p style="margin-top: 18px;">Pour un réglage permanent (ex : affichage TV dédié), vous pouvez aussi modifier l'adresse web (URL) de la page :</p>
-            <p>Ajoutez le paramètre <span class="highlight">&amp;speed=VALEUR</span> à la toute fin de l'adresse actuelle :</p>
-            <span class="code-block">...html?comp=XYZ&amp;speed=15</span>
-            <p><strong>Règles de réglage :</strong></p>
-            <ul>
-                <li>La valeur par défaut est de <span class="highlight">20</span>.</li>
-                <li>Plus le nombre est <strong>petit</strong> (ex: <code style="font-weight: bold;">10</code>), plus le défilement sera <strong>rapide</strong>.</li>
-                <li>Plus le nombre est <strong>grand</strong> (ex: <code style="font-weight: bold;">35</code>), plus le défilement sera <strong>lent</strong>.</li>
-            </ul>
+            <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
+        </header>
+
+        <div id="resultsContainer">
+            <div class="no-data">Connexion au serveur de résultats en cours...</div>
         </div>
     </div>
-</div>
 
-<script>
-    const CONFIG = {
-      clubName: "LIGUE CENTRE-VAL DE LOIRE",
-      clubKey:  "LIGUE_CENTRE_VDL",
-      firebase: {
-        apiKey: "AIzaSyCCxEQPz9ACahpK4qC2-D67IKBEv6mcKHE",
-        authDomain: "resultats-tir-centre.firebaseapp.com",
-        databaseURL: "https://resultats-tir-centre-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "resultats-tir-centre",
-        storageBucket: "resultats-tir-centre.firebasestorage.app",
-        appId: "1:247507218569:web:ea3bdc169dde0f29709658"
-      }
-    };
+    <button class="info-btn" id="openHelpBtn" title="Aide au défilement">i</button>
 
-    firebase.initializeApp(CONFIG.firebase);
-    const db = firebase.database();
-    const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeHelpBtn">&times;</button>
+            <h3 class="modal-title">⚙️ Régler la vitesse de défilement</h3>
+            <div class="modal-body">
+                <div class="speed-control">
+                    <div class="speed-control-labels">
+                        <span>⚡ Rapide</span>
+                        <span id="speedValueDisplay" class="speed-value">20</span>
+                        <span>Lent 🐢</span>
+                    </div>
+                    <input type="range" id="speedSlider" class="speed-slider" min="5" max="60" step="1" value="20">
+                    <p class="speed-hint">Ajuste le défilement en direct, pour cette page uniquement (non enregistré).
+                    </p>
+                </div>
+                <p style="margin-top: 18px;">Pour un réglage permanent (ex : affichage TV dédié), vous pouvez aussi
+                    modifier l'adresse web (URL) de la page :</p>
+                <p>Ajoutez le paramètre <span class="highlight">&amp;speed=VALEUR</span> à la toute fin de l'adresse
+                    actuelle :</p>
+                <span class="code-block">...html?comp=XYZ&amp;speed=15</span>
+                <p><strong>Règles de réglage :</strong></p>
+                <ul>
+                    <li>La valeur par défaut est de <span class="highlight">20</span>.</li>
+                    <li>Plus le nombre est <strong>petit</strong> (ex: <code style="font-weight: bold;">10</code>), plus
+                        le défilement sera <strong>rapide</strong>.</li>
+                    <li>Plus le nombre est <strong>grand</strong> (ex: <code style="font-weight: bold;">35</code>), plus
+                        le défilement sera <strong>lent</strong>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const compId = urlParams.get('comp');
+    <script>
+        const CONFIG = {
+            clubName: "LIGUE CENTRE-VAL DE LOIRE",
+            clubKey: "LIGUE_CENTRE_VDL",
+            firebase: {
+                apiKey: "AIzaSyCCxEQPz9ACahpK4qC2-D67IKBEv6mcKHE",
+                authDomain: "resultats-tir-centre.firebaseapp.com",
+                databaseURL: "https://resultats-tir-centre-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "resultats-tir-centre",
+                storageBucket: "resultats-tir-centre.firebasestorage.app",
+                appId: "1:247507218569:web:ea3bdc169dde0f29709658"
+            }
+        };
 
-    let scrollSpeed = parseInt(urlParams.get('speed')) || 20;
-    let scrollIntervalId = null;
+        firebase.initializeApp(CONFIG.firebase);
+        const db = firebase.database();
+        const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
 
-    document.title = "Palmarès en Direct - " + CONFIG.clubName;
-    document.querySelectorAll('.header-logo').forEach(img => { img.alt = "Logo " + CONFIG.clubName; });
-    
-    const favicon = document.createElement('link');
-    favicon.rel = 'icon';
-    favicon.type = 'image/png';
-    favicon.href = 'logo.png';
-    document.head.appendChild(favicon);
+        const urlParams = new URLSearchParams(window.location.search);
+        const compId = urlParams.get('comp');
 
-    // GESTION DU CLIC SUR LA MODALE D'AIDE
-    const modal = document.getElementById('helpModal');
-    const openBtn = document.getElementById('openHelpBtn');
-    const closeBtn = document.getElementById('closeHelpBtn');
+        let scrollSpeed = parseInt(urlParams.get('speed')) || 20;
+        let scrollIntervalId = null;
 
-    openBtn.addEventListener('click', () => {
-        modal.classList.add('active');
-        isScrolling = false; // Met en pause le défilement pendant la lecture
-        speedSlider.value = scrollSpeed;
-        speedValueDisplay.textContent = scrollSpeed;
-    });
+        document.title = "Palmarès en Direct - " + CONFIG.clubName;
+        document.querySelectorAll('.header-logo').forEach(img => { img.alt = "Logo " + CONFIG.clubName; });
 
-    function closeModal() {
-        modal.classList.remove('active');
-        isScrolling = true; // Reprend le défilement automatique
-    }
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.type = 'image/png';
+        favicon.href = 'logo.png';
+        document.head.appendChild(favicon);
 
-    closeBtn.addEventListener('click', closeModal);
-    // Ferme la modale si l'utilisateur clique en dehors de la boîte blanche
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+        // GESTION DU CLIC SUR LA MODALE D'AIDE
+        const modal = document.getElementById('helpModal');
+        const openBtn = document.getElementById('openHelpBtn');
+        const closeBtn = document.getElementById('closeHelpBtn');
 
-    // GESTION DU CURSEUR DE VITESSE
-    const speedSlider = document.getElementById('speedSlider');
-    const speedValueDisplay = document.getElementById('speedValueDisplay');
+        openBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+            isScrolling = false; // Met en pause le défilement pendant la lecture
+            speedSlider.value = scrollSpeed;
+            speedValueDisplay.textContent = scrollSpeed;
+        });
 
-    speedSlider.addEventListener('input', () => {
-        scrollSpeed = parseInt(speedSlider.value, 10);
-        speedValueDisplay.textContent = scrollSpeed;
-        restartAutoScroll();
-    });
-
-    function updateStickyOffsets() {
-        const headerEl = document.querySelector('header');
-        if (!headerEl) return;
-        const GAP = 8;
-        const headerTop = parseFloat(getComputedStyle(headerEl).top) || 0;
-        const headerBottom = headerTop + headerEl.offsetHeight + GAP;
-        document.documentElement.style.setProperty('--header-offset', headerBottom + 'px');
-
-        const disciplineTitleEl = document.querySelector('.discipline-title');
-        if (disciplineTitleEl) {
-            document.documentElement.style.setProperty('--discipline-offset', (headerBottom + disciplineTitleEl.offsetHeight + GAP) + 'px');
-        }
-    }
-
-    function debounce(fn, delay) {
-        let t;
-        return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
-    }
-
-    window.addEventListener('resize', debounce(updateStickyOffsets, 150));
-    window.addEventListener('load', updateStickyOffsets);
-    document.querySelectorAll('.header-logo').forEach(img => img.addEventListener('load', updateStickyOffsets));
-    updateStickyOffsets();
-
-    function getSeriesCount(fullDisc) {
-        // Extrait le code (ex: "101" depuis "101 - Pistolet 3/7 EDT")
-        const code = fullDisc.split(" - ")[0].trim();
-
-        // 1. École de Tir
-        if (["101", "158"].includes(code)) {
-            return 3;
-        }
-        const codesEDTPrecision = ["150", "152", "154", "105", "158", "150/154", "161", "162", "163"];
-        if (codesEDTPrecision.includes(code)) {
-            return 4;
+        function closeModal() {
+            modal.classList.remove('active');
+            isScrolling = true; // Reprend le défilement automatique
         }
 
-        if (code === "150/154") {
-            return 8;
-        }
-
-        // 2. Armes Anciennes - 10 ou 2 séries
-        const codesAA = ["601", "701", "602", "702", "603", "703", "604", "704", "608", "708", "614", "714", "615", "715", "616", "716", "636", "736", "637", "737", "605", "705", "606", "706", "706-S", "706-U", "607", "712", "623", "723", "628", "728"]
-        if (codesAA.includes(code)) {
-            return 10;
-        }
-        const codesAA_2 = ["621", "721", "622", "722"]
-        if (codesAA_2.includes(code)) {
-            return 2;
-        }
-
-        // 3. TAR - 4 ou 2 séries
-        const codesTAR = ["821"]
-        if (codesTAR.includes(code)) {
-            return 4;
-        }
-        const codesTAR_2 = ["810", "811", "812", "816", "820", "822", "823", "830", "831", "832", "815"]
-        if (codesTAR_2.includes(code)) {
-            return 2;
-        }
-
-        // 4. Par défaut (ISSF, etc. : 6 séries)
-        
-        if (code === "107") {
-            return 4;
-        }
-
-        return 6;
-    }
-
-    if (!compId) {
-        document.getElementById('resultsContainer').innerHTML = `<div class="no-data" style="color:red; font-weight:bold;">⚠️ Erreur : Aucune compétition spécifiée.</div>`;
-    } else {
-        db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
-            const config = snap.val();
-            document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
-            requestAnimationFrame(updateStickyOffsets);
-
-            if (config && config.scrollSpeed !== undefined) {
-                const dbSpeed = parseInt(config.scrollSpeed);
-                if (!isNaN(dbSpeed) && !urlParams.has('speed')) { // L'URL reste prioritaire si spécifiée
-                    scrollSpeed = dbSpeed;
-                    restartAutoScroll(); // Met à jour le défilement en direct si la config change
-                }
+        closeBtn.addEventListener('click', closeModal);
+        // Ferme la modale si l'utilisateur clique en dehors de la boîte blanche
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
             }
         });
 
-        db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
-            const data = snap.val() || {};
-            const shooters = Object.keys(data).map(key => data[key]);
+        // GESTION DU CURSEUR DE VITESSE
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValueDisplay = document.getElementById('speedValueDisplay');
 
-            if (shooters.length === 0) {
-                document.getElementById('resultsContainer').innerHTML = `<div class="no-data">Aucun tireur enregistré pour le moment.</div>`;
-                return;
+        speedSlider.addEventListener('input', () => {
+            scrollSpeed = parseInt(speedSlider.value, 10);
+            speedValueDisplay.textContent = scrollSpeed;
+            restartAutoScroll();
+        });
+
+        function updateStickyOffsets() {
+            const headerEl = document.querySelector('header');
+            if (!headerEl) return;
+            const GAP = 8;
+            const headerTop = parseFloat(getComputedStyle(headerEl).top) || 0;
+            const headerBottom = headerTop + headerEl.offsetHeight + GAP;
+            document.documentElement.style.setProperty('--header-offset', headerBottom + 'px');
+
+            const disciplineTitleEl = document.querySelector('.discipline-title');
+            if (disciplineTitleEl) {
+                document.documentElement.style.setProperty('--discipline-offset', (headerBottom + disciplineTitleEl.offsetHeight + GAP) + 'px');
+            }
+        }
+
+        function debounce(fn, delay) {
+            let t;
+            return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+        }
+
+        window.addEventListener('resize', debounce(updateStickyOffsets, 150));
+        window.addEventListener('load', updateStickyOffsets);
+        document.querySelectorAll('.header-logo').forEach(img => img.addEventListener('load', updateStickyOffsets));
+        updateStickyOffsets();
+
+        function getSeriesCount(fullDisc) {
+            // Extrait le code (ex: "101" depuis "101 - Pistolet 3/7 EDT")
+            const code = fullDisc.split(" - ")[0].trim();
+
+            // 1. École de Tir
+            if (["101", "158"].includes(code)) {
+                return 3;
+            }
+            const codesEDTPrecision = ["150", "152", "154", "105", "158", "150/154", "161", "162", "163"];
+            if (codesEDTPrecision.includes(code)) {
+                return 4;
             }
 
-            const tree = {};
-            shooters.forEach(s => {
-                let disc = s.discipline ? s.discipline.trim() : "Sans Discipline";
-                let cat = s.category ? s.category.trim() : "Général";
-                if(cat.length > 0) {
-                    cat = cat.charAt(0).toUpperCase() + cat.slice(1);
+            if (code === "150/154") {
+                return 8;
+            }
+
+            // 2. Armes Anciennes - 10 ou 2 séries
+            const codesAA = ["601", "701", "602", "702", "603", "703", "604", "704", "608", "708", "614", "714", "615", "715", "616", "716", "636", "736", "637", "737", "605", "705", "606", "706", "706-S", "706-U", "607", "712", "623", "723", "628", "728"]
+            if (codesAA.includes(code)) {
+                return 10;
+            }
+            const codesAA_2 = ["621", "721", "622", "722"]
+            if (codesAA_2.includes(code)) {
+                return 2;
+            }
+
+            // 3. TAR - 4 ou 2 séries
+            const codesTAR = ["821"]
+            if (codesTAR.includes(code)) {
+                return 4;
+            }
+            const codesTAR_2 = ["810", "811", "812", "816", "820", "822", "823", "830", "831", "832", "815"]
+            if (codesTAR_2.includes(code)) {
+                return 2;
+            }
+
+            // 4. Par défaut (ISSF, etc. : 6 séries)
+
+            if (code === "107") {
+                return 4;
+            }
+
+            return 6;
+        }
+
+        if (!compId) {
+            document.getElementById('resultsContainer').innerHTML = `<div class="no-data" style="color:red; font-weight:bold;">⚠️ Erreur : Aucune compétition spécifiée.</div>`;
+        } else {
+            db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
+                const config = snap.val();
+                document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
+                requestAnimationFrame(updateStickyOffsets);
+
+                if (config && config.scrollSpeed !== undefined) {
+                    const dbSpeed = parseInt(config.scrollSpeed);
+                    if (!isNaN(dbSpeed) && !urlParams.has('speed')) { // L'URL reste prioritaire si spécifiée
+                        scrollSpeed = dbSpeed;
+                        restartAutoScroll(); // Met à jour le défilement en direct si la config change
+                    }
                 }
-                if (!tree[disc]) tree[disc] = {};
-                if (!tree[disc][cat]) tree[disc][cat] = [];
-                tree[disc][cat].push(s);
             });
 
-            let html = '';
-            const sortedDisciplines = Object.keys(tree).sort();
+            db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
+                const data = snap.val() || {};
+                const shooters = Object.keys(data).map(key => data[key]);
 
-            sortedDisciplines.forEach(disc => {
-                html += `<div class="discipline-section">`;
-                html += `<h2 class="discipline-title">${disc}</h2>`;
+                if (shooters.length === 0) {
+                    document.getElementById('resultsContainer').innerHTML = `<div class="no-data">Aucun tireur enregistré pour le moment.</div>`;
+                    return;
+                }
 
-                const sortedCategories = Object.keys(tree[disc]).sort();
+                const tree = {};
+                shooters.forEach(s => {
+                    let disc = s.discipline ? s.discipline.trim() : "Sans Discipline";
+                    let cat = s.category ? s.category.trim() : "Général";
+                    if (cat.length > 0) {
+                        cat = cat.charAt(0).toUpperCase() + cat.slice(1);
+                    }
+                    if (!tree[disc]) tree[disc] = {};
+                    if (!tree[disc][cat]) tree[disc][cat] = [];
+                    tree[disc][cat].push(s);
+                });
 
-                sortedCategories.forEach(cat => {
-                    html += `<div class="category-block">`;
-                    html += `<div class="category-title">${cat}</div>`;
-                    html += `<div class="table-scroll"><table>
+                let html = '';
+                const sortedDisciplines = Object.keys(tree).sort();
+
+                sortedDisciplines.forEach(disc => {
+                    html += `<div class="discipline-section">`;
+                    html += `<h2 class="discipline-title">${disc}</h2>`;
+
+                    const sortedCategories = Object.keys(tree[disc]).sort();
+
+                    sortedCategories.forEach(cat => {
+                        html += `<div class="category-block">`;
+                        html += `<div class="category-title">${cat}</div>`;
+                        html += `<div class="table-scroll"><table>
                                 <thead>
                                     <tr>
                                         <th style="width: 50px;">Pl.</th>
@@ -843,113 +881,114 @@
                                 </thead>
                                 <tbody>`;
 
-                    const rankedShooters = tree[disc][cat].sort((a, b) => {
-                        const statusA = a.status || "OK";
-                        const statusB = b.status || "OK";
+                        const rankedShooters = tree[disc][cat].sort((a, b) => {
+                            const statusA = a.status || "OK";
+                            const statusB = b.status || "OK";
 
-                        // RÈGLE : Renvoyer les DNS et DSQ tout en bas du classement
-                        if (statusA !== "OK" && statusB === "OK") return 1;
-                        if (statusA === "OK" && statusB !== "OK") return -1;
+                            // RÈGLE : Renvoyer les DNS et DSQ tout en bas du classement
+                            if (statusA !== "OK" && statusB === "OK") return 1;
+                            if (statusA === "OK" && statusB !== "OK") return -1;
 
-                        // 1. Tri par Score global
-                        const scoreA = a.score || 0;
-                        const scoreB = b.score || 0;
-                        if (scoreB !== scoreA) return scoreB - scoreA;
+                            // 1. Tri par Score global
+                            const scoreA = a.score || 0;
+                            const scoreB = b.score || 0;
+                            if (scoreB !== scoreA) return scoreB - scoreA;
 
-                        // 2. Égalité : Tri par Mouches
-                        const mouchesA = a.mouches || 0;
-                        const mouchesB = b.mouches || 0;
-                        if (mouchesB !== mouchesA) return mouchesB - mouchesA;
+                            // 2. Égalité : Tri par Mouches
+                            const mouchesA = a.mouches || 0;
+                            const mouchesB = b.mouches || 0;
+                            if (mouchesB !== mouchesA) return mouchesB - mouchesA;
 
-                        // 3. Égalité persistante : Remonter les séries (de la dernière vers la première)
-                        const seriesA = a.series || [];
-                        const seriesB = b.series || [];
-                        const maxSeries = Math.max(seriesA.length, seriesB.length);
+                            // 3. Égalité persistante : Remonter les séries (de la dernière vers la première)
+                            const seriesA = a.series || [];
+                            const seriesB = b.series || [];
+                            const maxSeries = Math.max(seriesA.length, seriesB.length);
 
-                        for (let k = maxSeries - 1; k >= 0; k--) {
-                            const sA = seriesA[k] || 0;
-                            const sB = seriesB[k] || 0;
-                            if (sB !== sA) return sB - sA;
-                        }
+                            for (let k = maxSeries - 1; k >= 0; k--) {
+                                const sA = seriesA[k] || 0;
+                                const sB = seriesB[k] || 0;
+                                if (sB !== sA) return sB - sA;
+                            }
 
-                        return 0; 
-                    });
-                    
-                    let rankCounter = 1;
+                            return 0;
+                        });
 
-                    rankedShooters.forEach((s, index) => {
-                        const isOk = (!s.status || s.status === "OK" || s.status === "");
-                        
-                        // Si le tireur est DNS/DSQ, on l'affiche ainsi, sinon on lui donne son rang et on incrémente
-                        const displayRank = isOk ? rankCounter++ : s.status;
-                        
-                        // Arrondi à 1 décimale ou affichage "-" (DNS/DSQ)
-                        const displayScore = isOk ? (s.score !== undefined ? (Math.round(s.score * 10) / 10) : 0) : "-";
-                        
-                        // Les médailles ne s'appliquent que si la personne a une vraie place numérique
-                        const medal = (displayRank === 1) ? "🥇 " : (displayRank === 2) ? "🥈 " : (displayRank === 3) ? "🥉 " : "";
+                        let rankCounter = 1;
 
-                        // Pas de mouches affichées pour les DNS/DSQ
-                        const suffixeMouches = (s.mouches > 0 && isOk) ? ` <small style="color:var(--text-light); font-weight:normal;"> /${s.mouches}x</small>` : "";
+                        rankedShooters.forEach((s, index) => {
+                            const isOk = (!s.status || s.status === "OK" || s.status === "");
 
-                        let seriesDisplay = "-";
+                            // Si le tireur est DNS/DSQ, on l'affiche ainsi, sinon on lui donne son rang et on incrémente
+                            const displayRank = isOk ? rankCounter++ : s.status;
 
-                        if (isOk) {
-                            // On récupère le nombre de séries attendues par rapport à l'épreuve
-                            const expectedCount = s.series ? s.series.length : getSeriesCount(s.discipline);
-                            const currentSeries = s.series || Array(expectedCount).fill(0);
-                            
-                            seriesDisplay = currentSeries.map(val => 
-                                `<span style="display:inline-block; padding: 2px 5px; background:#e2e8f0; margin:0 2px; border-radius:4px; font-size:0.9rem; font-weight:600;">${Math.round(val * 10) / 10}</span>`
-                            ).join('');
-                        }
+                            // Arrondi à 1 décimale ou affichage "-" (DNS/DSQ)
+                            const displayScore = isOk ? (s.score !== undefined ? (Math.round(s.score * 10) / 10) : 0) : "-";
 
-                        html += `<tr>
+                            // Les médailles ne s'appliquent que si la personne a une vraie place numérique
+                            const medal = (displayRank === 1) ? "🥇 " : (displayRank === 2) ? "🥈 " : (displayRank === 3) ? "🥉 " : "";
+
+                            // Pas de mouches affichées pour les DNS/DSQ
+                            const suffixeMouches = (s.mouches > 0 && isOk) ? ` <small style="color:var(--text-light); font-weight:normal;"> /${s.mouches}x</small>` : "";
+
+                            let seriesDisplay = "-";
+
+                            if (isOk) {
+                                // On récupère le nombre de séries attendues par rapport à l'épreuve
+                                const expectedCount = s.series ? s.series.length : getSeriesCount(s.discipline);
+                                const currentSeries = s.series || Array(expectedCount).fill(0);
+
+                                seriesDisplay = currentSeries.map(val =>
+                                    `<span style="display:inline-block; padding: 2px 5px; background:#e2e8f0; margin:0 2px; border-radius:4px; font-size:0.9rem; font-weight:600;">${Math.round(val * 10) / 10}</span>`
+                                ).join('');
+                            }
+
+                            html += `<tr>
                                     <td class="rank-cell" style="text-align: center; font-weight: bold;">${displayRank}</td>
                                     <td class="name-cell">${medal}${s.lastName} ${s.firstName}</td>
                                     <td class="club-cell">${s.club || '-'}</td>
                                     <td style="text-align: center;">${seriesDisplay}</td>
                                     <td class="score-cell" style="font-weight: bold;">${displayScore}${suffixeMouches}</td>
                                 </tr>`;
+                        });
+
+                        html += `</tbody></table></div></div>`;
                     });
-
-                    html += `</tbody></table></div></div>`;
+                    html += `</div>`;
                 });
-                html += `</div>`;
+
+                document.getElementById('resultsContainer').innerHTML = html;
+                requestAnimationFrame(updateStickyOffsets);
             });
-
-            document.getElementById('resultsContainer').innerHTML = html;
-            requestAnimationFrame(updateStickyOffsets);
-        });
-    }
-
-    let isScrolling = true;
-
-    function startAutoScroll() {
-        scrollIntervalId = setInterval(() => {
-            if (isScrolling) {
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
-                    isScrolling = false; 
-                    setTimeout(() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setTimeout(() => { isScrolling = true; }, 2000);
-                    }, 3000); 
-                } else {
-                    window.scrollBy(0, 1);
-                }
-            }
-        }, scrollSpeed); // Vitesse dynamique basée sur la variable scrollSpeed
-    }
-
-    function restartAutoScroll() {
-        if (scrollIntervalId) {
-            clearInterval(scrollIntervalId);
         }
-        startAutoScroll();
-    }
 
-    // Lancement du défilement après 4 secondes au premier démarrage
-    setTimeout(startAutoScroll, 4000);
-</script>
+        let isScrolling = true;
+
+        function startAutoScroll() {
+            scrollIntervalId = setInterval(() => {
+                if (isScrolling) {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+                        isScrolling = false;
+                        setTimeout(() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            setTimeout(() => { isScrolling = true; }, 2000);
+                        }, 3000);
+                    } else {
+                        window.scrollBy(0, 1);
+                    }
+                }
+            }, scrollSpeed); // Vitesse dynamique basée sur la variable scrollSpeed
+        }
+
+        function restartAutoScroll() {
+            if (scrollIntervalId) {
+                clearInterval(scrollIntervalId);
+            }
+            startAutoScroll();
+        }
+
+        // Lancement du défilement après 4 secondes au premier démarrage
+        setTimeout(startAutoScroll, 4000);
+    </script>
 </body>
+
 </html>

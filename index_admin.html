@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <!-- LIGUE CENTRE-VAL DE LOIRE — version v1.5 — 13/07/2026 -->
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Résultats</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap"
+    rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -15,21 +18,34 @@
   <style>
     :root {
       /* Thème Lumineux et Contrasté */
-      --sidebar-bg: #8dafd8;       /* Bleu nuit structuré pour le menu latéral */
+      --sidebar-bg: #8dafd8;
+      /* Bleu nuit structuré pour le menu latéral */
       --sidebar-border: #042247;
       --sidebar-accent: #4283d3;
-      
-      --bg: #fffdef;               /* Fond de page gris-bleu très clair */
-      --surface: #ffffff;          /* Cartes blanches */
-      --border: #cbd5e1;           /* Bordures bien visibles */
-      
-      --text-main: #0f172a;        /* Texte principal Ardoise foncé (haute lisibilité) */
-      --text-muted: #475569;       /* Texte secondaire */
-      
+
+      --bg: #fffdef;
+      /* Fond de page gris-bleu très clair */
+      --surface: #ffffff;
+      /* Cartes blanches */
+      --border: #cbd5e1;
+      /* Bordures bien visibles */
+
+      --text-main: #0f172a;
+      /* Texte principal Ardoise foncé (haute lisibilité) */
+      --text-muted: #475569;
+      /* Texte secondaire */
+
       --danger: #dc2626;
       --radius: 8px;
     }
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Barlow', sans-serif;
@@ -59,16 +75,18 @@
       gap: 12px;
       margin-bottom: 36px;
       padding-bottom: 28px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
+
     .logo-area img {
       width: 90px;
       height: 90px;
       object-fit: contain;
       border-radius: 50%;
       border: 2px solid rgba(28, 63, 217, 0.35);
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
     }
+
     .logo-name {
       font-family: 'Rajdhani', sans-serif;
       font-size: 1.35rem;
@@ -80,7 +98,10 @@
       align-items: center;
       gap: 7px;
     }
-    .logo-name span { color: var(--sidebar-accent); }
+
+    .logo-name span {
+      color: var(--sidebar-accent);
+    }
 
     .btn-create {
       background: var(--sidebar-accent);
@@ -98,6 +119,7 @@
       box-shadow: 0 4px 20px rgba(28, 126, 217, 0.35);
       width: 100%;
     }
+
     .btn-create:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 28px rgba(28, 110, 217, 0.5);
@@ -127,6 +149,7 @@
       align-items: center;
       margin-bottom: 40px;
     }
+
     .page-title {
       font-family: 'Rajdhani', sans-serif;
       font-weight: 700;
@@ -134,6 +157,7 @@
       letter-spacing: 0.03em;
       color: var(--text);
     }
+
     .clock {
       font-family: 'Rajdhani', sans-serif;
       font-size: 1.4rem;
@@ -159,28 +183,35 @@
       border-radius: var(--radius-xl);
       padding: 26px;
       border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
       transition: all 0.25s ease;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
     }
+
     .card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 3px;
       background: linear-gradient(90deg, var(--sidebar-accent), transparent);
       opacity: 0;
       transition: opacity 0.25s;
     }
+
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 16px 40px rgba(74,44,64,0.1);
+      box-shadow: 0 16px 40px rgba(74, 44, 64, 0.1);
       border-color: #cfe0f5;
     }
-    .card:hover::before { opacity: 1; }
+
+    .card:hover::before {
+      opacity: 1;
+    }
 
     .type-tag {
       display: inline-block;
@@ -207,6 +238,7 @@
       margin-bottom: 5px;
       text-transform: uppercase;
     }
+
     .card-code {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 0.8rem;
@@ -225,18 +257,20 @@
       align-items: center;
       margin-bottom: 20px;
     }
+
     .stat-label {
       font-size: 0.85rem;
       color: var(--text-muted);
       font-weight: 500;
     }
+
     .stat-val {
       font-family: 'Rajdhani', sans-serif;
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent);
     }
-    
+
     /* ═══ ACTION BUTTONS ═══ */
     .actions-grid {
       display: grid;
@@ -265,6 +299,7 @@
       background-color: #3b82f6 !important;
       color: #ffffff !important;
     }
+
     .btn-saisie:hover {
       background-color: #1d4ed8 !important;
       color: #ffffff !important;
@@ -275,6 +310,7 @@
       background-color: #0f172a !important;
       color: #ffffff !important;
     }
+
     .btn-qr:hover {
       background-color: #334155 !important;
       color: #ffffff !important;
@@ -285,6 +321,7 @@
       background-color: #10b981 !important;
       color: #ffffff !important;
     }
+
     .btn-tv:hover {
       background-color: #047857 !important;
       color: #ffffff !important;
@@ -295,6 +332,7 @@
       background-color: #ef4444 !important;
       color: #ffffff !important;
     }
+
     .btn-del:hover {
       background-color: #b91c1c !important;
       color: #ffffff !important;
@@ -303,13 +341,19 @@
 
     /* ═══ MODALS ═══ */
     .modal {
-      position: fixed; inset: 0;
-      background: rgba(42,22,40,0.45);
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 22, 40, 0.45);
       backdrop-filter: blur(6px);
-      display: none; align-items: center; justify-content: center;
+      display: none;
+      align-items: center;
+      justify-content: center;
       z-index: 1000;
     }
-    .modal.active { display: flex; }
+
+    .modal.active {
+      display: flex;
+    }
 
     .modal-content {
       background: white;
@@ -317,8 +361,9 @@
       border-radius: var(--radius-xl);
       width: 90%;
       max-width: 440px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.15);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
     }
+
     .modal-title {
       font-family: 'Rajdhani', sans-serif;
       font-weight: 700;
@@ -330,6 +375,7 @@
       padding-bottom: 16px;
       border-bottom: 1px solid var(--border);
     }
+
     .modal-content input,
     .modal-content select {
       width: 100%;
@@ -344,28 +390,58 @@
       outline: none;
       transition: border-color 0.2s;
     }
+
     .modal-content input:focus,
     .modal-content select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(190,24,93,0.08);
+      box-shadow: 0 0 0 3px rgba(190, 24, 93, 0.08);
     }
-    .modal-actions { display: flex; gap: 10px; margin-top: 6px; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
     .btn-modal-cancel {
-      flex: 1; padding: 12px; border-radius: var(--radius);
-      border: 1px solid var(--border); background: var(--surface2);
-      font-family: 'Rajdhani', sans-serif; font-weight: 700;
-      font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em;
-      cursor: pointer; color: var(--text-muted); transition: all 0.18s;
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.18s;
     }
-    .btn-modal-cancel:hover { background: var(--border); }
+
+    .btn-modal-cancel:hover {
+      background: var(--border);
+    }
+
     .btn-modal-confirm {
-      flex: 1; padding: 12px; border-radius: var(--radius);
-      border: none; background: var(--sidebar-bg);
-      font-family: 'Rajdhani', sans-serif; font-weight: 700;
-      font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em;
-      cursor: pointer; color: white; transition: all 0.18s;
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--sidebar-bg);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      color: white;
+      transition: all 0.18s;
     }
-    .btn-modal-confirm:hover { background: #54141c; }
+
+    .btn-modal-confirm:hover {
+      background: #54141c;
+    }
 
     /* QR modal */
     .qr-url {
@@ -386,8 +462,16 @@
       padding: 80px 24px;
       color: var(--text-dim);
     }
-    .empty-state .icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
-    .empty-state p { font-size: 1rem; }
+
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+    }
 
     /* ═══ AFFICHE IMPRIMABLE (QR CODE) ═══ */
     /* Invisible à l'écran ; n'apparaît que lors de l'impression / export PDF */
@@ -402,9 +486,10 @@
       }
 
       /* On masque tout le reste de la page et on n'affiche que l'affiche */
-      body.printing-poster > *:not(#printPoster) {
+      body.printing-poster>*:not(#printPoster) {
         display: none !important;
       }
+
       body.printing-poster #printPoster {
         display: flex !important;
       }
@@ -507,42 +592,119 @@
     }
   </style>
 </head>
+
 <body>
 
   <style>
     #loginOverlay {
-      position: fixed; inset: 0; z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(160deg, #042247 0%, #0d51a3 100%);
       font-family: 'Rajdhani', sans-serif;
     }
+
     .login-card {
-      background: #fff; border-radius: 18px; padding: 36px 32px;
-      width: 320px; max-width: 90vw; text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.45); border-top: 5px solid #d99a1c;
+      background: #fff;
+      border-radius: 18px;
+      padding: 36px 32px;
+      width: 320px;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      border-top: 5px solid #d99a1c;
     }
-    .login-logo { width: 80px; height: 80px; object-fit: contain; border-radius: 50%; margin-bottom: 12px; }
-    .login-title { margin: 0 0 4px; color: #042247; font-size: 1.4rem; text-transform: uppercase; letter-spacing: .05em; }
-    .login-sub { margin: 0 0 22px; color: #8dafd8; font-size: .9rem; }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: 50%;
+      margin-bottom: 12px;
+    }
+
+    .login-title {
+      margin: 0 0 4px;
+      color: #042247;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .login-sub {
+      margin: 0 0 22px;
+      color: #8dafd8;
+      font-size: .9rem;
+    }
+
     .login-card input {
-      width: 100%; box-sizing: border-box; padding: 12px 14px; margin-bottom: 12px;
-      border: 1.5px solid #ead9cf; border-radius: 10px; font-size: 1rem; background: #fdf9f4; color: #042247;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border: 1.5px solid #ead9cf;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #fdf9f4;
+      color: #042247;
     }
-    .login-card input:focus { outline: none; border-color: #c1271d; box-shadow: 0 0 0 3px rgba(193,39,29,0.15); }
+
+    .login-card input:focus {
+      outline: none;
+      border-color: #c1271d;
+      box-shadow: 0 0 0 3px rgba(193, 39, 29, 0.15);
+    }
+
     #loginBtn {
-      width: 100%; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
-      background: #c1271d; color: #fff; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: .05em;
-      transition: background .2s; font-family: 'Rajdhani', sans-serif;
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #c1271d;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      transition: background .2s;
+      font-family: 'Rajdhani', sans-serif;
     }
-    #loginBtn:hover { background: #a31710; }
-    .login-error { color: #c1271d; font-size: .85rem; margin-top: 12px; min-height: 1em; font-weight: 600; }
+
+    #loginBtn:hover {
+      background: #a31710;
+    }
+
+    .login-error {
+      color: #c1271d;
+      font-size: .85rem;
+      margin-top: 12px;
+      min-height: 1em;
+      font-weight: 600;
+    }
+
     .btn-logout {
-      background: transparent; color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.4);
-      border-radius: 10px; padding: 9px; cursor: pointer; width: 100%;
-      font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: .8rem;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      padding: 9px;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-size: .8rem;
       transition: background .2s;
     }
-    .btn-logout:hover { background: rgba(0,0,0,0.25); }
+
+    .btn-logout:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
   </style>
 
   <div id="loginOverlay">
@@ -559,11 +721,11 @@
 
   <aside class="sidebar">
     <div class="logo-area">
-      <img src="logo.png" id="clubLogo"
-           onerror="this.style.display='none'" alt="Logo du club">
+      <img src="logo.png" id="clubLogo" onerror="this.style.display='none'" alt="Logo du club">
       <div class="logo-name"><span id="clubNameDisplay" style="color: #ffffff;"></span></div>
     </div>
-    <button class="btn-create" onclick="openCreateModal()" style="background-color: #ffffff; color: var(--primary, #333); font-weight: bold;">+ Nouvelle Compétition</button>
+    <button class="btn-create" onclick="openCreateModal()"
+      style="background-color: #ffffff; color: var(--primary, #333); font-weight: bold;">+ Nouvelle Compétition</button>
     <button class="btn-logout" onclick="doLogout()" style="margin-top:auto;">⎋ Déconnexion</button>
     <div class="sidebar-footer">LIGUE CENTRE-VAL DE LOIRE · v1.5 — 13/07/2026</div>
   </aside>
@@ -796,7 +958,7 @@
               <a href="saisie_multicomp.html?comp=${code}" class="btn-act btn-saisie">⌨️ Saisie</a>
               <button onclick="openQr('${code}')" class="btn-act btn-qr">📱 QR Code</button>
               <a href="affichage_multicomp.html?comp=${code}" target="_blank" class="btn-act btn-tv">📺 Affichage Live</a>
-              <button onclick="deleteComp('${code}', '${config.name.replace(/'/g,"\\'")}')" class="btn-act btn-del">🗑️ Supprimer</button>
+              <button onclick="deleteComp('${code}', '${config.name.replace(/'/g, "\\'")}')" class="btn-act btn-del">🗑️ Supprimer</button>
             </div>
           `;
           grid.appendChild(card);
@@ -813,4 +975,5 @@
     }, 1000);
   </script>
 </body>
+
 </html>
