@@ -712,10 +712,6 @@
     });
 
     // ─── CALAGE DYNAMIQUE DES ÉLÉMENTS "STICKY" ───
-    // Les hauteurs du header et du titre de discipline varient selon l'écran,
-    // la taille des logos, et le texte du nom de compétition (retour à la ligne ou non).
-    // On mesure donc ces hauteurs en JS plutôt que de figer des valeurs en CSS,
-    // pour éviter tout chevauchement (notamment sur mobile).
     function updateStickyOffsets() {
         const headerEl = document.querySelector('header');
         if (!headerEl) return;
