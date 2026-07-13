@@ -388,6 +388,123 @@
     }
     .empty-state .icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
     .empty-state p { font-size: 1rem; }
+
+    /* ═══ AFFICHE IMPRIMABLE (QR CODE) ═══ */
+    /* Invisible à l'écran ; n'apparaît que lors de l'impression / export PDF */
+    #printPoster {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 15mm;
+      }
+
+      /* On masque tout le reste de la page et on n'affiche que l'affiche */
+      body.printing-poster > *:not(#printPoster) {
+        display: none !important;
+      }
+      body.printing-poster #printPoster {
+        display: flex !important;
+      }
+    }
+
+    #printPoster {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-height: 100vh;
+      padding: 6mm 8mm;
+      text-align: center;
+      font-family: 'Barlow', sans-serif;
+      color: var(--text-main);
+      background: #ffffff;
+    }
+
+    .poster-topbar {
+      width: 100%;
+      height: 6mm;
+      background: linear-gradient(90deg, var(--sidebar-accent), var(--sidebar-bg));
+      border-radius: 4px;
+      margin-bottom: 12mm;
+      flex-shrink: 0;
+    }
+
+    .poster-logo {
+      width: 30mm;
+      height: 30mm;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 2px solid var(--sidebar-accent);
+      margin-bottom: 6mm;
+    }
+
+    .poster-club {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 4.2mm;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4mm;
+    }
+
+    .poster-comp-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 9mm;
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin-bottom: 4mm;
+      max-width: 165mm;
+    }
+
+    .poster-subtitle {
+      font-size: 5mm;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 12mm;
+    }
+
+    .poster-qr-frame {
+      padding: 8mm;
+      border: 2px solid #e8ecfd;
+      border-radius: 6mm;
+      background: white;
+      box-shadow: 0 0 0 1px #f1f5f9;
+      margin-bottom: 12mm;
+      display: inline-flex;
+    }
+
+    .poster-instructions {
+      font-size: 4.8mm;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 4mm;
+      max-width: 150mm;
+    }
+
+    .poster-url {
+      font-family: 'Courier New', monospace;
+      font-size: 3.2mm;
+      color: var(--text-muted);
+      word-break: break-all;
+      max-width: 160mm;
+      margin-bottom: auto;
+    }
+
+    .poster-footer {
+      margin-top: 12mm;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 3.2mm;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -486,9 +603,28 @@
       <div class="modal-title" id="qrTitle">Accès Live</div>
       <div id="qrcode" style="display:inline-block; border: 6px solid #e8ecfd; border-radius: 12px;"></div>
       <div class="qr-url" id="qrUrl"></div>
-      <button class="btn-modal-cancel" style="width:100%;" onclick="closeQrModal()">Fermer</button>
+      <div class="modal-actions">
+        <button class="btn-modal-confirm" onclick="printQrPoster()">🖨️ Imprimer l'affiche A4</button>
+        <button class="btn-modal-cancel" onclick="closeQrModal()">Fermer</button>
+      </div>
     </div>
   </div>
+
+  <!-- AFFICHE IMPRIMABLE (invisible à l'écran, ne sert que pour l'impression / PDF) -->
+  <div id="printPoster">
+    <div class="poster-topbar"></div>
+    <img id="posterLogo" src="logo.png" onerror="this.style.display='none'" class="poster-logo" alt="Logo du club">
+    <div class="poster-club" id="posterClubName">LIGUE CENTRE-VAL DE LOIRE</div>
+    <div class="poster-comp-name" id="posterCompName">Nom de la compétition</div>
+    <div class="poster-subtitle">Suivez les résultats en direct</div>
+    <div class="poster-qr-frame">
+      <div id="posterQr"></div>
+    </div>
+    <div class="poster-instructions">📱 Scannez ce QR code avec l'appareil photo de votre téléphone</div>
+    <div class="poster-url" id="posterUrl"></div>
+    <div class="poster-footer">LIGUE CENTRE-VAL DE LOIRE · Résultats en direct</div>
+  </div>
+
 
   <script>
     // ╔══════════════════════════════════════════════════════════════╗
@@ -504,7 +640,7 @@
       //       SANS espaces ni accents. Doit être différent pour chaque club.
       clubKey: "LIGUE_CENTRE_VDL",
 
-      // 2) Adresse du site sur GitHub Pages — sert à générer les QR codes.
+      // 2) Adresse du site sur GitHub Pages (utile à la génération des QR Codes)
       githubBase: "https://toma-it.github.io/resultats-tir-centre",
 
       // 3) Configuration Firebase
@@ -571,6 +707,10 @@
     function openCreateModal() { document.getElementById('createModal').classList.add('active'); }
     function closeCreateModal() { document.getElementById('createModal').classList.remove('active'); }
 
+    let compsCache = {};
+    let currentQrUrl = '';
+    let currentQrCompName = '';
+
     function createComp() {
       const name = document.getElementById('newCompName').value.trim();
       const code = document.getElementById('newCompCode').value.trim().toUpperCase().replace(/\s/g, '_');
@@ -590,6 +730,11 @@
 
     function openQr(code) {
       const url = `${GITHUB_BASE}/affichage_multicomp.html?comp=${code}`;
+      const compName = (compsCache[code] && compsCache[code].config && compsCache[code].config.name) ? compsCache[code].config.name : code;
+
+      currentQrUrl = url;
+      currentQrCompName = compName;
+
       document.getElementById('qrTitle').textContent = '📱 ' + code;
       document.getElementById('qrUrl').textContent = url;
       const qrContainer = document.getElementById('qrcode');
@@ -600,10 +745,32 @@
 
     function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
 
+    function printQrPoster() {
+      // Renseigne l'affiche avec les infos de la compétition en cours
+      document.getElementById('posterClubName').textContent = CONFIG.clubName;
+      document.getElementById('posterCompName').textContent = currentQrCompName;
+      document.getElementById('posterUrl').textContent = currentQrUrl;
+
+      // Génère un QR code en grand format, dédié à l'impression
+      const posterQrContainer = document.getElementById('posterQr');
+      posterQrContainer.innerHTML = '';
+      new QRCode(posterQrContainer, { text: currentQrUrl, width: 460, height: 460, correctLevel: QRCode.CorrectLevel.M });
+
+      // Bascule en mode "affiche plein écran" puis lance l'impression du navigateur
+      // (l'utilisateur peut choisir "Enregistrer en PDF" comme destination)
+      document.body.classList.add('printing-poster');
+      setTimeout(() => { window.print(); }, 150);
+    }
+
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('printing-poster');
+    });
+
     database.ref(CLUB_PATH).on('value', snap => {
       const grid = document.getElementById('compGrid');
       grid.innerHTML = '';
       const data = snap.val();
+      compsCache = data || {};
       if (!data) {
         grid.innerHTML = `<div class="empty-state"><div class="icon"></div><p>Aucune compétition créée pour l'instant.</p></div>`;
         return;
