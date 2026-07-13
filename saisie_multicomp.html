@@ -85,6 +85,14 @@
             text-transform: uppercase;
             margin-top: 3px;
         }
+        .comp-name {
+            font-size: 0.85rem;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            margin-top: 4px;
+        }
         .header-actions { display: flex; align-items: center; gap: 14px; }
         .version-tag {
             font-family: 'Barlow Condensed', sans-serif;
@@ -552,11 +560,11 @@
 <div class="container">
     <header>
         <div class="header-left">
-            <div class="header-logo"><img src="logo.png" id="clubLogo" onerror="this.style.display='none'" alt="Logo du club" style="max-height: 70px; max-width: 70px;"></div>
-            
+            <div class="header-logo"><img src="logo.png" id="clubLogo" onerror="this.style.display='none'" alt="Logo du club" style="max-height: 50px; max-width: 50px;"></div>
             <div>
                 <h1 class="header-title">Saisie des Résultats</h1>
                 <div class="header-sub" id="clubSub">Ligue Centre-Val de Loire</div>
+                <div class="comp-name" id="compTitle">Chargement de la compétition...</div>
             </div>
         </div>
         <div class="header-actions">
@@ -756,13 +764,23 @@
 
     function startDataListeners() {
         db.ref('Ligue_Tireurs_Archive').on('value', snap => { archiveTireurs = Object.values(snap.val() || {}); });
-        if (compId) {
-            db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
-                const data = snap.val() || {};
-                shootersData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                renderList(shootersData);
-            });
+
+        if (!compId) {
+            document.getElementById('compTitle').textContent = "⚠️ Aucune compétition spécifiée (paramètre ?comp=… manquant)";
+            return;
         }
+
+        // Récupère et affiche le nom de la compétition en cours de saisie
+        db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
+            const config = snap.val();
+            document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours (nom non renseigné)";
+        });
+
+        db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
+            const data = snap.val() || {};
+            shootersData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            renderList(shootersData);
+        });
     }
 
     function updateMenus() {
