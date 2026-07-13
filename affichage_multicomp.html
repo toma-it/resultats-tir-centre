@@ -711,18 +711,17 @@
         restartAutoScroll();
     });
 
-    // ─── CALAGE DYNAMIQUE DES ÉLÉMENTS "STICKY" ───
     function updateStickyOffsets() {
         const headerEl = document.querySelector('header');
         if (!headerEl) return;
-
+        const GAP = 8;
         const headerTop = parseFloat(getComputedStyle(headerEl).top) || 0;
-        const headerBottom = headerTop + headerEl.offsetHeight;
+        const headerBottom = headerTop + headerEl.offsetHeight + GAP;
         document.documentElement.style.setProperty('--header-offset', headerBottom + 'px');
 
         const disciplineTitleEl = document.querySelector('.discipline-title');
         if (disciplineTitleEl) {
-            document.documentElement.style.setProperty('--discipline-offset', (headerBottom + disciplineTitleEl.offsetHeight) + 'px');
+            document.documentElement.style.setProperty('--discipline-offset', (headerBottom + disciplineTitleEl.offsetHeight + GAP) + 'px');
         }
     }
 
