@@ -552,7 +552,7 @@
 <div class="container">
     <header>
         <div class="header-left">
-            <div class="header-logo"><img src="logo.png" id="clubLogo" onerror="this.style.display='none'" alt="Logo du club"></div>
+            <div class="header-logo"><img src="logo.png" id="clubLogo" onerror="this.style.display='none'" alt="Logo du club" style="max-height: 70px; max-width: 70px;"></div>
             
             <div>
                 <h1 class="header-title">Saisie des Résultats</h1>
@@ -706,9 +706,15 @@
     const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
     const compId = new URLSearchParams(window.location.search).get('comp');
 
-    document.title = "Saisie — " + CONFIG.clubName;
+    document.title = "Saisie - " + CONFIG.clubName;
     document.getElementById('clubSub').textContent = CONFIG.clubName;
     document.getElementById('loginClub').textContent = CONFIG.clubName + " · Saisie";
+    
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.href = 'logo.png';
+    document.head.appendChild(favicon);
 
     let shootersData = [];
     let archiveTireurs = [];
