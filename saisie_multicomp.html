@@ -41,7 +41,7 @@
         }
 
         .container {
-            max-width: 1020px;
+            max-width: 1300px;
             margin: 0 auto;
             position: relative;
         }
@@ -466,7 +466,7 @@
         #loginOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(74,20,16,0.45);
+            background: rgba(16, 25, 74, 0.45);
             backdrop-filter: blur(6px);
             display: none;
             align-items: center;
@@ -539,7 +539,7 @@
 
 <div id="loginOverlay">
     <div class="login-card">
-        <div class="login-logo">🎯</div>
+        <div class="login-logo"></div>
         <h2 class="login-title" id="loginClub">Saisie — Accès réservé</h2>
         <p class="login-sub">Connecte-toi pour saisir les résultats</p>
         <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
@@ -552,7 +552,8 @@
 <div class="container">
     <header>
         <div class="header-left">
-            <div class="header-logo">🎯</div>
+            <div class="header-logo"><img src="logo.png" id="clubLogo" onerror="this.style.display='none'" alt="Logo du club"></div>
+            
             <div>
                 <h1 class="header-title">Saisie des Résultats</h1>
                 <div class="header-sub" id="clubSub">Ligue Centre-Val de Loire</div>
@@ -561,7 +562,7 @@
         <div class="header-actions">
             <span class="version-tag">v1.5</span>
             <button type="button" id="btnToggleImport" class="btn-toggle-import">
-                <span>🪄</span> Import Excel
+                <span>🪄</span> Import CSV
             </button>
             <a href="index_admin.html" class="link-back">← Retour</a>
             <a href="#" class="link-back" onclick="doLogout(); return false;">⎋ Déconnexion</a>
@@ -574,7 +575,7 @@
         <div class="import-hint">
             Sélectionnez un fichier <strong>.csv</strong> (Séparateur : Point-virgule <code>;</code>).<br>
             <strong>Colonnes requises :</strong> Nom ; Prenom ; Club ; Categorie ; Epreuve<br>
-            Optionnel pour les scores : <strong>S1 ; S2 ; S3 ; S4 ; S5 ; S6</strong> (les séries vides seront ignorées).
+            <strong></strong>Optionnel pour les scores :</strong> S1 ; S2 ; S3 ; S4 ; S5 ; S6 ; ... (les séries vides seront ignorées).
         </div>
         <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 15px; width: 100%;">
         <div class="btn-row">
@@ -656,7 +657,7 @@
         </div>
         <div id="shooterList">
             <div class="empty-state">
-                <div class="empty-icon">🎯</div>
+                <div class="empty-icon"></div>
                 Aucun tireur enregistré pour cette compétition.
             </div>
         </div>
@@ -672,7 +673,7 @@
             this.classList.add('active');
         } else {
             block.style.display = 'none';
-            this.innerHTML = '<span>🪄</span> Import Excel';
+            this.innerHTML = '<span>🪄</span> Import CSV';
             this.classList.remove('active');
         }
     });

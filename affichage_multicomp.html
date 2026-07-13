@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --primary-bordeaux: #8dafd8; /* Devient le Bleu Royal officiel de la Ligue */
+            --primary-bordeaux: #8dafd8;
             --bg-pastel: #fffdef;         /* Même fond frais et lumineux pour l'affichage TV */
             --text-dark: #0F172A;         /* Même couleur de texte principale */
             --text-light: #64748B;        /* Même couleur de texte secondaire */
@@ -117,7 +117,6 @@
             margin-bottom: 25px;
         }
 
-        /* === SEUL CHANGEMENT : couleur rose/bordeaux sur les bandeaux catégorie === */
         .category-title {
             background: #f3e6f0;
             color: #6d1f4e;
@@ -128,6 +127,10 @@
             margin-bottom: 12px;
             width: fit-content;
             border-left: 4px solid #9b3272;
+            position: sticky;
+            top: 215px;
+            z-index: 80;
+            box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
         }
 
         table {
@@ -220,9 +223,14 @@
     firebase.initializeApp(CONFIG.firebase);
     const db = firebase.database();
     const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
-    const compId = new URLSearchParams(window.location.search).get('comp');
 
-    document.title = "🏆 " + CONFIG.clubName + " — Palmarès en Direct";
+    const urlParams = new URLSearchParams(window.location.search);
+    const compId = urlParams.get('comp');
+
+    let scrollSpeed = parseInt(urlParams.get('speed')) || 20;
+    let scrollIntervalId = null;
+
+    document.title = CONFIG.clubName + " - Palmarès en Direct";
     document.querySelectorAll('.header-logo').forEach(img => { img.alt = "Logo " + CONFIG.clubName; });
 
     function getSeriesCount(fullDisc) {
@@ -277,6 +285,14 @@
         db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
             const config = snap.val();
             document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
+
+            if (config && config.scrollSpeed !== undefined) {
+                const dbSpeed = parseInt(config.scrollSpeed);
+                if (!isNaN(dbSpeed) && !urlParams.has('speed')) { // L'URL reste prioritaire si spécifiée
+                    scrollSpeed = dbSpeed;
+                    restartAutoScroll(); // Met à jour le défilement en direct si la config change
+                }
+            }
         });
 
         db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
@@ -404,9 +420,9 @@
     }
 
     let isScrolling = true;
-    
+
     function startAutoScroll() {
-        setInterval(() => {
+        scrollIntervalId = setInterval(() => {
             if (isScrolling) {
                 if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
                     isScrolling = false; 
@@ -418,9 +434,17 @@
                     window.scrollBy(0, 1);
                 }
             }
-        }, 20);
+        }, scrollSpeed); // Vitesse dynamique basée sur la variable scrollSpeed
     }
 
+    function restartAutoScroll() {
+        if (scrollIntervalId) {
+            clearInterval(scrollIntervalId);
+        }
+        startAutoScroll();
+    }
+
+    // Lancement du défilement après 4 secondes au premier démarrage
     setTimeout(startAutoScroll, 4000);
 </script>
 </body>

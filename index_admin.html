@@ -66,7 +66,7 @@
       height: 90px;
       object-fit: contain;
       border-radius: 50%;
-      border: 2px solid rgba(217,154,28,0.35);
+      border: 2px solid rgba(28, 63, 217, 0.35);
       background: rgba(255,255,255,0.05);
     }
     .logo-name {
@@ -110,7 +110,7 @@
       font-size: 0.72rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--sidebar-muted);
+      color: #a5a5a5;
       opacity: 0.7;
     }
 
@@ -178,7 +178,7 @@
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 16px 40px rgba(74,44,64,0.1);
-      border-color: #f5e0cf;
+      border-color: #cfe0f5;
     }
     .card:hover::before { opacity: 1; }
 
@@ -446,7 +446,7 @@
     #loginOverlay {
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(160deg, #3a0e14 0%, #6a2418 100%);
+      background: linear-gradient(160deg, #042247 0%, #0d51a3 100%);
       font-family: 'Rajdhani', sans-serif;
     }
     .login-card {
@@ -455,11 +455,11 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.45); border-top: 5px solid #d99a1c;
     }
     .login-logo { width: 80px; height: 80px; object-fit: contain; border-radius: 50%; margin-bottom: 12px; }
-    .login-title { margin: 0 0 4px; color: #3a0e14; font-size: 1.4rem; text-transform: uppercase; letter-spacing: .05em; }
-    .login-sub { margin: 0 0 22px; color: #9a7264; font-size: .9rem; }
+    .login-title { margin: 0 0 4px; color: #042247; font-size: 1.4rem; text-transform: uppercase; letter-spacing: .05em; }
+    .login-sub { margin: 0 0 22px; color: #8dafd8; font-size: .9rem; }
     .login-card input {
       width: 100%; box-sizing: border-box; padding: 12px 14px; margin-bottom: 12px;
-      border: 1.5px solid #ead9cf; border-radius: 10px; font-size: 1rem; background: #fdf9f4; color: #3a0e14;
+      border: 1.5px solid #ead9cf; border-radius: 10px; font-size: 1rem; background: #fdf9f4; color: #042247;
     }
     .login-card input:focus { outline: none; border-color: #c1271d; box-shadow: 0 0 0 3px rgba(193,39,29,0.15); }
     #loginBtn {
@@ -514,7 +514,7 @@
     <div class="modal-content">
       <div class="modal-title">⚙️ Nouvelle Compétition</div>
       <input type="text" id="newCompName" placeholder="Nom de la Compétition">
-      <input type="text" id="newCompCode" placeholder="Code (ex: TAR_2026)">
+      <input type="text" id="newCompCode" placeholder="Code (ex: TAR_2027)">
       <select id="newCompType">
         <option value="ISSF10">ISSF 10 Mètres</option>
         <option value="EDT">École de Tir (EDT)</option>
@@ -534,7 +534,7 @@
   <div class="modal" id="qrModal">
     <div class="modal-content" style="text-align:center">
       <div class="modal-title" id="qrTitle">Accès Live</div>
-      <div id="qrcode" style="display:inline-block; border: 6px solid #fdf1e8; border-radius: 12px;"></div>
+      <div id="qrcode" style="display:inline-block; border: 6px solid #e8ecfd; border-radius: 12px;"></div>
       <div class="qr-url" id="qrUrl"></div>
       <button class="btn-modal-cancel" style="width:100%;" onclick="closeQrModal()">Fermer</button>
     </div>
@@ -649,7 +649,7 @@
       grid.innerHTML = '';
       const data = snap.val();
       if (!data) {
-        grid.innerHTML = `<div class="empty-state"><div class="icon">🎯</div><p>Aucune compétition créée pour l'instant.</p></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="icon"></div><p>Aucune compétition créée pour l'instant.</p></div>`;
         return;
       }
 
@@ -681,7 +681,7 @@
       });
 
       if (!hasCards) {
-        grid.innerHTML = `<div class="empty-state"><div class="icon">🎯</div><p>Aucune compétition créée pour l'instant.</p></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="icon"></div><p>Aucune compétition créée pour l'instant.</p></div>`;
       }
     });
 
