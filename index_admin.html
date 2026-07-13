@@ -507,22 +507,13 @@
       background: #ffffff;
     }
 
-    .poster-topbar {
-      width: 100%;
-      height: 6mm;
-      background: linear-gradient(90deg, var(--sidebar-accent), var(--sidebar-bg));
-      border-radius: 4px;
-      margin-bottom: 12mm;
-      flex-shrink: 0;
-    }
-
     .poster-logo {
       width: 30mm;
       height: 30mm;
       object-fit: contain;
       border-radius: 50%;
       border: 2px solid var(--sidebar-accent);
-      margin-bottom: 6mm;
+      margin-bottom: 4mm;
     }
 
     .poster-club {
@@ -550,7 +541,7 @@
       font-size: 5mm;
       color: var(--text-muted);
       font-weight: 600;
-      margin-bottom: 12mm;
+      margin-bottom: 8mm;
     }
 
     .poster-qr-frame {
@@ -559,7 +550,7 @@
       border-radius: 6mm;
       background: white;
       box-shadow: 0 0 0 1px #f1f5f9;
-      margin-bottom: 12mm;
+      margin-bottom: 8mm;
       display: inline-flex;
     }
 
@@ -576,12 +567,12 @@
       font-size: 3.2mm;
       color: var(--text-muted);
       word-break: break-all;
-      max-width: 160mm;
+      max-width: 170mm;
       margin-bottom: auto;
     }
 
     .poster-footer {
-      margin-top: 12mm;
+      margin-top: 8mm;
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 3.2mm;
       letter-spacing: 0.12em;
@@ -774,7 +765,6 @@
 
   <!-- AFFICHE IMPRIMABLE (invisible à l'écran, ne sert que pour l'impression / PDF) -->
   <div id="printPoster">
-    <!-- <div class="poster-topbar"></div> -->
     <img id="posterLogo" src="logo.png" onerror="this.style.display='none'" class="poster-logo" alt="Logo du club">
     <div class="poster-club" id="posterClubName">LIGUE CENTRE-VAL DE LOIRE</div>
     <div class="poster-comp-name" id="posterCompName">Nom de la compétition</div>
