@@ -15,16 +15,16 @@
             --surface: #ffffff;
             --surface2: #f8f1e7;
             --border: #efe2d2;
-            --border-active: #c1271d;
-            --accent: #c1271d;
+            --border-active: #4A90E2;
+            --accent: #4A90E2;
             --accent2: #d99a1c;
             --accent-dim: rgba(193,39,29,0.10);
             --text: #2a1410;
             --text-muted: #9a7264;
             --text-dim: #a8927d;
-            --blue: #c1271d;
+            --blue: #4A90E2;
             --blue-dim: rgba(193,39,29,0.10);
-            --red: #c1271d;
+            --red: #4A90E2;
             --red-dim: rgba(193,39,29,0.10);
             --warning: #d99a1c;
             --warning-dim: rgba(217,154,28,0.14);
@@ -56,7 +56,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(120deg, #c1271d 0%, #e8861f 100%);
+            background: linear-gradient(120deg, #4A90E2 0%, #5B8FB9 100%);
             padding: 18px 26px;
             border-radius: 16px;
             margin-bottom: 28px;
@@ -525,21 +525,6 @@
     </header>
 
     <!-- IMPORT BLOCK -->
-    <!-- <div class="panel panel-import" id="importBlock">
-        <div class="panel-title"><span>⚡</span> Importation Rapide — Copier-Coller Excel</div>
-        <div class="import-hint">
-            Copiez vos colonnes depuis Excel et collez-les ci-dessous.<br>
-            <strong>Ordre attendu :</strong> NOM &nbsp;|&nbsp; Prénom &nbsp;|&nbsp; Club &nbsp;|&nbsp; Code Discipline (ex: 250) &nbsp;|&nbsp; Catégorie (ex: Senior 1)
-        </div>
-        <textarea id="importArea" rows="4" placeholder="DUPONT&#9;Jean&#9;ST BEZIERS&#9;250&#9;Senior 1"></textarea>
-        <div class="btn-row" style="margin-top:12px;">
-            <button type="button" class="btn btn-import-run" onclick="processImport()">
-                🚀 Lancer l'importation automatique
-            </button>
-        </div>
-    </div> -->
-
-    <!-- IMPORT BLOCK MODIFIÉ -->
     <div class="panel panel-import" id="importBlock">
         <div class="panel-title"><span>⚡</span> Importation Fichier CSV (Engagements & Résultats)</div>
         <div class="import-hint">
@@ -553,6 +538,8 @@
                 🚀 Lancer l'importation du fichier CSV
             </button>
         </div>
+        <!-- Message de traitement en cours -->
+        <div id="importLoader">⏳ Traitement et synchronisation de l'importation en cours, veuillez patienter...</div>
     </div>
 
     <!-- MANUAL ENTRY FORM -->
@@ -574,16 +561,16 @@
             <input type="hidden" id="editId">
             <div class="field" style="position:relative;">
                 <label>Nom</label>
-                <input type="text" id="newNom" onkeyup="chercherDansArchive(this.value)" autocomplete="off" placeholder="DUPONT">
+                <input type="text" id="newNom" onkeyup="chercherDansArchive(this.value)" autocomplete="off" placeholder="BROSSIER">
                 <div id="suggestions"></div>
             </div>
             <div class="field">
                 <label>Prénom</label>
-                <input type="text" id="newPrenom" autocomplete="off" placeholder="Jean">
+                <input type="text" id="newPrenom" autocomplete="off" placeholder="Thomas">
             </div>
             <div class="field">
                 <label>Club</label>
-                <input type="text" id="newClub" autocomplete="off" placeholder="ST BEZIERS">
+                <input type="text" id="newClub" autocomplete="off" placeholder="C.J.F. TIR">
             </div>
         </div>
         <div class="form-row">
@@ -750,54 +737,6 @@
         document.getElementById('newCategorie').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
     }
 
-    // function processImport() {
-    //     const text = document.getElementById('importArea').value.trim();
-    //     if (!text) return alert("Veuillez coller des données provenant d'Excel dans la zone.");
-    //     const lines = text.split('\n');
-    //     let count = 0;
-    //     let doublons = 0;
-
-    //     lines.forEach(line => {
-    //         const cols = line.split('\t');
-    //         if (cols.length >= 4) { 
-    //             let nom = cols[0].trim().toUpperCase();
-    //             let prenom = cols[1].trim();
-    //             let club = cols[2].trim() || "-";
-    //             let rawDisc = cols[3].trim();
-    //             let cat = cols[4] ? cols[4].trim() : "Senior 1";
-                
-    //             let fullDisc = rawDisc;
-    //             for (let type in dataRef) {
-    //                 let found = dataRef[type].disc.find(d => d.startsWith(rawDisc));
-    //                 if (found) { fullDisc = found; break; }
-    //             }
-
-    //             if (nom && prenom) {
-    //                 let existeDeja = shootersData.some(s => s.lastName === nom && s.firstName === prenom && s.discipline === fullDisc);
-                    
-    //                 if (existeDeja) {
-    //                     doublons++;
-    //                 } else {
-    //                     const s = { lastName: nom, firstName: prenom, club: club, discipline: fullDisc, category: cat, score: 0 };
-    //                     db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
-    //                     const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
-    //                     db.ref('Ligue_Tireurs_Archive/' + key).update({ lastName: nom, firstName: prenom, club: club });
-    //                     count++;
-    //                 }
-    //             }
-    //         }
-    //     });
-        
-    //     if (count > 0 || doublons > 0) {
-    //         let msg = "";
-    //         if (count > 0) msg += `🚀 Succès ! ${count} engagements ont été importés.\n`;
-    //         if (doublons > 0) msg += `⚠️ Note : ${doublons} doublons ignorés (déjà inscrits).`;
-    //         alert(msg);
-    //         document.getElementById('importArea').value = '';
-    //         document.getElementById('btnToggleImport').click(); 
-    //     }
-    // }
-
     function normaliserCategorie(catCSV) {
         if (!catCSV) return "Non trouvée";
         const clean = catCSV.trim().toUpperCase();
@@ -818,11 +757,25 @@
         return mapping[clean] || catCSV; // Retourne le mapping ou le texte d'origine si aucun match
     }
 
+    function triggerCSVImport() {
+        const fileInput = document.getElementById('csvFileInput');
+        if (!fileInput.files[0]) return alert("Veuillez sélectionner un fichier CSV au préalable.");
+        
+        // Affichage du loader
+        document.getElementById('importLoader').style.display = "block";
+        
+        // Timeout pour laisser le DOM respirer et afficher le loader graphique
+        setTimeout(() => {
+            processCSVImport();
+        }, 100);
+    }
+
     function processCSVImport() {
         const fileInput = document.getElementById('csvFileInput');
         const file = fileInput.files[0];
+        const loader = document.getElementById('importLoader');
         
-        if (!file) return alert("Veuillez sélectionner un fichier CSV au préalable.");
+        // if (!file) return alert("Veuillez sélectionner un fichier CSV au préalable.");
 
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -845,6 +798,7 @@
                 let club = cols[headers.indexOf("ASSOCIATION NOM")] ? cols[headers.indexOf("ASSOCIATION NOM")].trim() : "-";
                 let rawCat = cols[headers.indexOf("CATÉGORIE E")] ? cols[headers.indexOf("CATÉGORIE E")].trim() : "";
                 let epreuve = cols[headers.indexOf("EPREUVE")] ? cols[headers.indexOf("EPREUVE")].trim() : "";
+                let placeStr = cols[headers.indexOf("PLACE")] ? cols[headers.indexOf("PLACE")].trim().toUpperCase() : "";
 
                 if (!nom || !prenom || !epreuve) continue;
 
@@ -856,6 +810,10 @@
                     let found = dataRef[type].disc.find(d => d.startsWith(epreuve));
                     if (found) { fullDisc = found; break; }
                 }
+
+                let status = "OK";
+                if (placeStr === "DNS") status = "DNS";
+                if (placeStr === "DSQ") status = "DSQ";
 
                 // Gestion des Séries (S1 à S6)
                 let series = [];
@@ -871,7 +829,11 @@
                             series.push(valSerie);
                             totalScore += valSerie;
                             hasScores = true;
+                        } else {
+                            series.push(0);
                         }
+                    } else {
+                        series.push(0);
                     }
                 }
 
@@ -892,9 +854,10 @@
                     club: club,
                     discipline: fullDisc,
                     category: cat,
-                    score: hasScores ? totalScore : (existingShooter ? (existingShooter.score || 0) : 0),
-                    series: series.length > 0 ? series : (existingShooter && existingShooter.series ? existingShooter.series : []),
-                    mouches: hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0)
+                    status: status,
+                    score: status !== "OK" ? 0 : (hasScores ? totalScore : (existingShooter ? (existingShooter.score || 0) : 0)),
+                    series: status !== "OK" ? [0,0,0,0,0,0] : (hasScores ? series : (existingShooter && existingShooter.series ? existingShooter.series : [0,0,0,0,0,0])),
+                    mouches: status !== "OK" ? 0 : (hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0))
                 };
 
                 if (existingShooter) {
@@ -906,6 +869,7 @@
                 }
             }
 
+            loader.style.display = "none";
             alert(`📊 Rapport d'importation :\n- ${countInscriptions} nouveaux tireurs engagés.\n- ${countScores} fiches de scores mises à jour.`);
             fileInput.value = "";
         };
@@ -989,18 +953,58 @@
         document.getElementById('formTireur').classList.remove('panel-edit-mode');
     }
 
+    function saveAdvancedScore(id, typeField, index, value) {
+        const s = shootersData.find(x => x.id === id);
+        if(!s) return;
+
+        let series = s.series || [0,0,0,0,0,0];
+        while(series.length < 6) series.push(0);
+        let mouches = s.mouches || 0;
+        let status = s.status || "OK";
+
+        if(typeField === 'serie') {
+            series[index] = parseFloat(value) || 0;
+        } else if(typeField === 'mouches') {
+            mouches = parseInt(value, 10) || 0;
+        } else if(typeField === 'status') {
+            status = value;
+        }
+
+        // Si DNS ou DSQ, le score repasse fictivement à 0
+        let total = 0;
+        if (status === "OK") {
+            total = series.reduce((acc, curr) => acc + curr, 0);
+        }
+
+        db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update({
+            series: series,
+            mouches: mouches,
+            status: status,
+            score: parseFloat(total.toFixed(2))
+        });
+    }
+
     function renderList(list) {
         const cont = document.getElementById('shooterList');
         if (list.length === 0) {
-            cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div>Aucun tireur enregistré pour cette compétition.</div>`;
+            cont.innerHTML = `<div class="empty-state">Aucun tireur enregistré pour cette compétition.</div>`;
             return;
         }
         cont.innerHTML = '';
+
         list.sort((a,b) => a.lastName.localeCompare(b.lastName)).forEach(s => {
+            const series = s.series || [0,0,0,0,0,0];
+            const currentStatus = s.status || "OK";
+            
+            let statusClass = "";
+            if(currentStatus === "DNS") statusClass = "status-dns";
+            if(currentStatus === "DSQ") statusClass = "status-dsq";
+
             const div = document.createElement('div');
-            div.className = 'shooter-item';
+            div.className = `shooter-item ${statusClass}`;
+            
             div.innerHTML = `
-                <div style="flex:1; min-width:0;">
+                <div class="shooter-info">
                     <div class="shooter-name">${s.lastName} <span style="font-weight:400; color:var(--text-muted)">${s.firstName}</span></div>
                     <div class="shooter-detail">
                         <span class="tag">${s.discipline}</span>
@@ -1008,16 +1012,60 @@
                         <span class="tag">${s.club}</span>
                     </div>
                 </div>
-                <div class="actions">
-                    <input type="number" step="0.1" class="score-input" value="${s.score || 0}" onchange="saveScore('${s.id}', this.value)">
-                    <button type="button" class="btn-action btn-edit" onclick="prepareEdit('${s.id}')">✏️</button>
-                    <button type="button" class="btn-action btn-del" onclick="deleteShooter('${s.id}')">🗑️</button>
-                </div>`;
+                
+                <!-- Zone de saisie avancée (6 Séries + Mouches + Statut) -->
+                <div class="scores-grid">
+                    <div class="score-box">
+                        <span>Statut</span>
+                        <select onchange="saveAdvancedScore('${s.id}', 'status', 0, this.value)">
+                            <option value="OK" ${currentStatus === 'OK' ? 'selected':''}>Présent</option>
+                            <option value="DNS" ${currentStatus === 'DNS' ? 'selected':''}>DNS</option>
+                            <option value="DSQ" ${currentStatus === 'DSQ' ? 'selected':''}>DSQ</option>
+                        </select>
+                    </div>
+                    <div class="score-box">
+                        <span>S1</span>
+                        <input type="number" step="0.1" value="${series[0] || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'skip', 0, 0); saveAdvancedScore('${s.id}', 'serie', 0, this.value)">
+                    </div>
+                    <div class="score-box">
+                        <span>S2</span>
+                        <input type="number" step="0.1" value="${series[1] || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'serie', 1, this.value)">
+                    </div>
+                    <div class="score-box">
+                        <span>S3</span>
+                        <input type="number" step="0.1" value="${series[2] || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'serie', 2, this.value)">
+                    </div>
+                    <div class="score-box">
+                        <span>S4</span>
+                        <input type="number" step="0.1" value="${series[3] || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'serie', 3, this.value)">
+                    </div>
+                    <div class="score-box">
+                        <span>S5</span>
+                        <input type="number" step="0.1" value="${series[4] || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'serie', 4, this.value)">
+                    </div>
+                    <div class="score-box">
+                        <span>S6</span>
+                        <input type="number" step="0.1" value="${series[5] || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'serie', 5, this.value)">
+                    </div>
+                    <div class="score-box">
+                        <span>Mouches</span>
+                        <input type="number" value="${s.mouches || 0}" ${currentStatus !== 'OK' ? 'disabled':''} onchange="saveAdvancedScore('${s.id}', 'mouches', 0, this.value)">
+                    </div>
+                </div>
+
+                <div class="score-box" style="min-width:70px; text-align:center;">
+                    <span style="font-size:0.75em; font-weight:bold; color:var(--primary);">TOTAL</span>
+                    <div style="font-size:1.3em; font-weight:800; color:var(--primary);">${currentStatus !== 'OK' ? currentStatus : (s.score || 0)}</div>
+                </div>
+
+                <div class="actions-block">
+                    <button type="button" class="btn-action" title="Modifier l'état Civil" onclick="prepareEdit('${s.id}')">✏️</button>
+                    <button type="button" class="btn-action" title="Supprimer" style="color:var(--danger)" onclick="deleteShooter('${s.id}')">🗑️</button>
+                </div>
+            `;
             cont.appendChild(div);
         });
     }
-
-    function saveScore(id, val) { db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update({ score: parseFloat(val) || 0 }); }
 
     function chercherDansArchive(val) {
         const box = document.getElementById('suggestions');
