@@ -900,7 +900,7 @@
                     discipline: fullDisc,
                     category: cat,
                     status: status,
-                    score: status !== "OK" ? 0 : (hasScores ? totalScore : (existingShooter ? (existingShooter.score || 0) : 0)),
+                    score: status !== "OK" ? 0 : (hasScores ? Math.round(totalScore * 10) / 10 : (existingShooter ? (existingShooter.score || 0) : 0)),
                     series: status !== "OK" ? [0,0,0,0,0,0] : (hasScores ? series : (existingShooter && existingShooter.series ? existingShooter.series : [0,0,0,0,0,0])),
                     mouches: status !== "OK" ? 0 : (hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0))
                 };
@@ -1100,7 +1100,7 @@
 
                 <div class="score-box" style="min-width:70px; text-align:center;">
                     <span style="font-size:0.75em; font-weight:bold; color:var(--primary);">TOTAL</span>
-                    <div style="font-size:1.3em; font-weight:800; color:var(--primary);">${currentStatus !== 'OK' ? currentStatus : (s.score || 0)}</div>
+                    <div style="font-size:1.3em; font-weight:800; color:var(--primary);">${currentStatus !== 'OK' ? currentStatus : (s.score !== undefined ? Math.round(s.score * 10) / 10 : 0)}</div>
                 </div>
 
                 <div class="actions-block">
