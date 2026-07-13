@@ -263,6 +263,11 @@
         }
 
         // 4. Par défaut (ISSF, etc. : 6 séries)
+        
+        if (code === "107") {
+            return 4;
+        }
+
         return 6;
     }
 
@@ -313,7 +318,7 @@
                                         <th style="width: 50px;">Pl.</th>
                                         <th>Nom Prénom</th>
                                         <th>Club</th>
-                                        <th style="text-align: center; width: 270px;">Séries</th>
+                                        <th style="text-align: center; width: 300px;">Séries</th>
                                         <th style="text-align: right; width: 100px;">Total</th>
                                     </tr>
                                 </thead>

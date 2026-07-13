@@ -841,6 +841,11 @@
         }
 
         // 4. Par défaut (ISSF, etc. : 6 séries)
+                
+        if (code === "107") {
+            return 4;
+        }
+
         return 6;
     }
 
