@@ -186,6 +186,120 @@
             font-style: italic;
             font-size: 1.2rem;
         }
+
+        .info-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary-bordeaux);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'Georgia', serif; /* Donne un bel aspect élégant au "i" */
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .info-btn:hover {
+            transform: scale(1.1);
+            background-color: #6d93bc;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6); /* Teinte sombre adoucie */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .modal-title {
+            margin-top: 0;
+            color: #042247;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-body p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .code-block {
+            background-color: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #0f172a;
+            display: block;
+            margin: 10px 0;
+            word-break: break-all;
+            font-size: 0.95rem;
+        }
+
+        .highlight {
+            color: #b07d10;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -203,6 +317,26 @@
 
     <div id="resultsContainer">
         <div class="no-data">Connexion au serveur de résultats en cours...</div>
+    </div>
+</div>
+
+<button class="info-btn" id="openHelpBtn" title="Aide au défilement">i</button>
+
+<div class="modal-overlay" id="helpModal">
+    <div class="modal-content">
+        <button class="modal-close" id="closeHelpBtn">&times;</button>
+        <h3 class="modal-title">⚙️ Régler la vitesse de défilement</h3>
+        <div class="modal-body">
+            <p>Vous pouvez ajuster la vitesse de défilement automatique directement en modifiant l'adresse web (URL) dans votre navigateur.</p>
+            <p>Ajoutez le paramètre <span class="highlight">&amp;speed=VALEUR</span> à la toute fin de l'adresse actuelle :</p>
+            <span class="code-block">...html?comp=XYZ&amp;speed=15</span>
+            <p><strong>Règles de réglage :</strong></p>
+            <ul>
+                <li>La valeur par défaut est de <span class="highlight">20</span>.</li>
+                <li>Plus le nombre est <strong>petit</strong> (ex: <code style="font-weight: bold;">10</code>), plus le défilement sera <strong>rapide</strong>.</li>
+                <li>Plus le nombre est <strong>grand</strong> (ex: <code style="font-weight: bold;">35</code>), plus le défilement sera <strong>lent</strong>.</li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -232,6 +366,29 @@
 
     document.title = CONFIG.clubName + " - Palmarès en Direct";
     document.querySelectorAll('.header-logo').forEach(img => { img.alt = "Logo " + CONFIG.clubName; });
+
+    // GESTION DU CLIC SUR LA MODALE D'AIDE
+    const modal = document.getElementById('helpModal');
+    const openBtn = document.getElementById('openHelpBtn');
+    const closeBtn = document.getElementById('closeHelpBtn');
+
+    openBtn.addEventListener('click', () => {
+        modal.classList.add('active');
+        isScrolling = false; // Met en pause le défilement pendant la lecture
+    });
+
+    function closeModal() {
+        modal.classList.remove('active');
+        isScrolling = true; // Reprend le défilement automatique
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    // Ferme la modale si l'utilisateur clique en dehors de la boîte blanche
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
 
     function getSeriesCount(fullDisc) {
         // Extrait le code (ex: "101" depuis "101 - Pistolet 3/7 EDT")
