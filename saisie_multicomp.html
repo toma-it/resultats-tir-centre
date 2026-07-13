@@ -684,7 +684,7 @@
         ISSF10: { disc: ["100 - Pistolet 10m", "102 - Pistolet Vitesse 10m", "103 - Pistolet Standard 10m", "104 - Carabine 10m", "107 - Arbalète Match 10m", "109 - Cible Mobile 10m", "110 - Cible Mobile Mixte 10m", "025 - Arbalète Field 18m", "171 - HP R1/R2 Car. 10m", "173 - HP R3 Car. 10m", "174 - HP R4 Car. 10m", "175 - HP R5 Car. 10m", "177 - HP VIS Car. 10m deb.", "178 - HP VIP Car. 10m couchée", "181 - HP P1/P2 Pist. 10m", "183 - HP F5 Pist. Vitesse 10m", "184 - HP P5 Pist. Standard 10m"], cats: ["Minime Fille", "Minime Garçon", "Cadet Fille", "Cadet Garçon", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"] },
         ISSF2550: { disc: ["250 - Pistolet Standard 25m", "251 - Pistolet Percussion Centrale", "252 - Pistolet 25m", "253 - Pistolet Vitesse 25m", "271 - HP - P3 - Pistolet 25m (SH1)", "272 - HP - P4 - Pistolet 50m (SH1)", "273 - HP - F10 Pistolet Standard 25m (SH1)", "500 - Pistolet 50m", "501 - Carabine 60BC", "502 - Carabine 3x20", "571 - HP - R6 Car. 50m 60 BC (SH1)", "572 - HP - R7/R8 Car. 50m 3x20 (SH1) - Mixte", "574 - HP - R9 Car. 50m 60BC Pot. (SH2)", "575 - HP - F12 Car. 50m 3x20 Pot. (SH2)", "576 - HP - F13 Car. 50m 60 BC Pot. (CLF)"], cats: ["Minime Fille", "Minime Garçon", "Cadet Fille", "Cadet Garçon", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"] },
         EDT: { disc: ["101 - Pistolet 3/7 EDT", "150 - Pistolet 10m EDT", "152 - Pistolet Vitesse 10m EDT", "154 - Carabine 10m EDT", "105 - Carabine 3x20 EDT", "158 - Arbalète Field EDT", "150/154 - Combiné EDT", "161 - HP R5 Car. 10m couchée EDT", "162 - HP R3 Car. 10m couchée EDT", "163 - HP P1 Pistolet 10m EDT"], cats: ["Poussin Fille", "Poussin Garçon", "Benjamin Fille", "Benjamin Garçon", "Minime Fille", "Minime Garçon"] },
-        MLAIC: { disc: ["601 - Miquelet Origine", "701 - Miquelet Réplique", "602 - Maximilien Origine", "702 - Maximilien Réplique", "603 - Minié Origine", "703 - Minié Réplique", "604 - Whitworth Origine", "704 - Whitworth Réplique", "605 - Cominazzo Origine", "705 - Cominazzo Réplique", "606 - Kuchenreuter Origine", "706 - Kuchenreuter Réplique", "607 - Colt", "712 - Mariette", "615 - Vetterli Origine", "715 - Vetterli Réplique", "637 - Lamarmora Origine", "737 - Lamarmora Réplique"], cats: ["Senior", "Junior"] }
+        MLAIC: { disc: ["601 - Miquelet Origine", "701 - Miquelet Réplique", "602 - Maximilien Origine", "702 - Maximilien Réplique", "603 - Minié Origine", "703 - Minié Réplique", "604 - Whitworth Origine", "704 - Whitworth Réplique", "605 - Cominazzo Origine", "705 - Cominazzo Réplique", "606 - Kuchenreuter Origine", "706 - Kuchenreuter Réplique", "706-U - Kuchenreuter Réplique Under Hammer", "706-S - Kuchenreuter Réplique Side Hammer", "607 - Colt", "712 - Mariette", "615 - Vetterli Origine", "715 - Vetterli Réplique", "637 - Lamarmora Origine", "737 - Lamarmora Réplique"], cats: ["Senior", "Junior"] }
     };
 
     const CONFIG = {
@@ -803,6 +803,47 @@
         return mapping[clean] || catCSV; // Retourne le mapping ou le texte d'origine si aucun match
     }
 
+    function getSeriesCount(fullDisc) {
+        // Extrait le code (ex: "101" depuis "101 - Pistolet 3/7 EDT")
+        const code = fullDisc.split(" - ")[0].trim();
+
+        // 1. École de Tir
+        if (["101", "158"].includes(code)) {
+            return 3;
+        }
+        const codesEDTPrecision = ["150", "152", "154", "105", "158", "150/154", "161", "162", "163"];
+        if (codesEDTPrecision.includes(code)) {
+            return 4;
+        }
+
+        if (code === "150/154") {
+            return 8;
+        }
+
+        // 2. Armes Anciennes - 10 ou 2 séries
+        const codesAA = ["601", "701", "602", "702", "603", "703", "604", "704", "608", "708", "614", "714", "615", "715", "616", "716", "636", "736", "637", "737", "605", "705", "606", "706", "706-S", "706-U", "607", "712", "623", "723", "628", "728"]
+        if (codesAA.includes(code)) {
+            return 10;
+        }
+        const codesAA_2 = ["621", "721", "622", "722"]
+        if (codesAA_2.includes(code)) {
+            return 2;
+        }
+
+        // 3. TAR - 4 ou 2 séries
+        const codesTAR = ["821"]
+        if (codesTAR.includes(code)) {
+            return 4;
+        }
+        const codesTAR_2 = ["810", "811", "812", "816", "820", "822", "823", "830", "831", "832", "815"]
+        if (codesTAR_2.includes(code)) {
+            return 2;
+        }
+
+        // 4. Par défaut (ISSF, etc. : 6 séries)
+        return 6;
+    }
+
     function triggerCSVImport() {
         const fileInput = document.getElementById('csvFileInput');
         if (!fileInput.files[0]) return alert("Veuillez sélectionner un fichier CSV au préalable.");
@@ -864,7 +905,9 @@
                 let totalScore = 0;
                 let hasScores = false;
 
-                for (let sIdx = 1; sIdx <= 6; sIdx++) {
+                const maxSeries = getSeriesCount(fullDisc);
+
+                for (let sIdx = 1; sIdx <= maxSeries; sIdx++) {
                     let headerName = "SÉRIE " + sIdx;
                     let colPos = headers.indexOf(headerName);
                     if (colPos !== -1 && cols[colPos] && cols[colPos].trim() !== "") {
@@ -893,6 +936,8 @@
 
                 let existingShooter = shootersData.find(s => s.lastName === nom && s.firstName === prenom && s.discipline === fullDisc);
 
+                const fallbackSeries = Array(getSeriesCount(fullDisc)).fill(0);
+
                 let shooterPayload = {
                     lastName: nom,
                     firstName: prenom,
@@ -901,7 +946,7 @@
                     category: cat,
                     status: status,
                     score: status !== "OK" ? 0 : (hasScores ? Math.round(totalScore * 10) / 10 : (existingShooter ? (existingShooter.score || 0) : 0)),
-                    series: status !== "OK" ? [0,0,0,0,0,0] : (hasScores ? series : (existingShooter && existingShooter.series ? existingShooter.series : [0,0,0,0,0,0])),
+                    series: status !== "OK" ? fallbackSeries : (hasScores ? series : (existingShooter && existingShooter.series ? existingShooter.series : fallbackSeries)),
                     mouches: status !== "OK" ? 0 : (hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0))
                 };
 
