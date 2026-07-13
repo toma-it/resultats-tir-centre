@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.0 — 13/07/2026 -->
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Saisie des Résultats</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --bg: #fdf6ee;
+            --surface: #ffffff;
+            --surface2: #f8f1e7;
+            --border: #efe2d2;
+            --border-active: #c1271d;
+            --accent: #c1271d;
+            --accent2: #d99a1c;
+            --accent-dim: rgba(193,39,29,0.10);
+            --text: #2a1410;
+            --text-muted: #9a7264;
+            --text-dim: #a8927d;
+            --blue: #c1271d;
+            --blue-dim: rgba(193,39,29,0.10);
+            --red: #c1271d;
+            --red-dim: rgba(193,39,29,0.10);
+            --warning: #d99a1c;
+            --warning-dim: rgba(217,154,28,0.14);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 24px 16px;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(193,39,29,0.05) 0%, transparent 60%);
+        }
+
+        .container {
+            max-width: 1020px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(120deg, #c1271d 0%, #e8861f 100%);
+            padding: 18px 26px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 22px rgba(193,39,29,0.18);
+            position: relative;
+        }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header-logo {
+            width: 46px; height: 46px;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+        }
+        .header-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin: 0;
+            line-height: 1;
+        }
+        .header-sub {
+            font-size: 0.75rem;
+            color: #ffe2c4;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+        .header-actions { display: flex; align-items: center; gap: 14px; }
+        .version-tag {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.7rem;
+            color: #ffffff;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.35);
+            padding: 3px 9px;
+            border-radius: 20px;
+        }
+        .link-back {
+            text-decoration: none;
+            color: rgba(255,255,255,0.85);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .link-back:hover { color: #ffffff; }
+
+        /* TOGGLE IMPORT BUTTON */
+        .btn-toggle-import {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #ffffff;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex; align-items: center; gap: 7px;
+            transition: all 0.2s;
+            letter-spacing: 0.03em;
+        }
+        .btn-toggle-import:hover { background: rgba(255,255,255,0.28); border-color: #ffffff; }
+        .btn-toggle-import.active { background: rgba(255,255,255,0.28); border-color: #ffffff; color: #ffffff; }
+
+        /* PANELS */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--blue), transparent);
+        }
+        .panel.panel-import { display: none; }
+        .panel.panel-import::before { background: linear-gradient(90deg, var(--accent), transparent); }
+        .panel.panel-edit-mode { border-color: rgba(227,179,65,0.4); }
+        .panel.panel-edit-mode::before { background: linear-gradient(90deg, var(--warning), transparent); }
+
+        .panel-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin: 0 0 18px 0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .panel-title span { color: var(--blue); font-size: 1rem; }
+        .panel-import .panel-title span { color: var(--accent); }
+
+        /* CHAMPIONSHIP SELECTOR */
+        .champ-select-wrap { margin-bottom: 20px; }
+        .champ-select-wrap label {
+            display: block;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        select#typeSelector {
+            background: var(--accent);
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border: none;
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            width: 100%;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* FORM */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+        input[type="text"], input[type="number"], select, textarea {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.92rem;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(193,39,29,0.12);
+        }
+        select option { background: var(--surface2); }
+        textarea {
+            font-family: 'Barlow Condensed', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        /* IMPORT HINT */
+        .import-hint {
+            background: rgba(217,154,28,0.07);
+            border: 1px solid rgba(217,154,28,0.22);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        .import-hint strong { color: var(--accent); }
+
+        /* BUTTONS */
+        .btn-row { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+        .btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border: none;
+            padding: 13px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.18s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: var(--blue); color: #fff; }
+        .btn-primary:hover { background: #a51e16; box-shadow: 0 0 18px rgba(193,39,29,0.30); }
+        .btn-import-run { background: var(--accent); color: #ffffff; }
+        .btn-import-run:hover { background: #a51e16; box-shadow: 0 0 18px rgba(193,39,29,0.30); }
+        .btn-warning { background: var(--warning); color: #2a1410; display: none; }
+        .btn-warning:hover { background: #c98a12; }
+        .btn-secondary { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); display: none; font-size: 0.85rem; padding: 10px; }
+        .btn-secondary:hover { color: var(--text); border-color: var(--text-muted); }
+
+        /* SEARCH */
+        .search-wrap { position: relative; margin-bottom: 16px; }
+        .search-wrap::before {
+            content: '⌕';
+            position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+            color: var(--text-dim); font-size: 1.1rem; pointer-events: none;
+        }
+        input#search {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 11px 12px 11px 36px;
+            font-size: 0.9rem;
+            border-radius: var(--radius);
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        input#search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(193,39,29,0.12); outline: none; }
+        input#search::placeholder { color: var(--text-dim); }
+
+        /* SHOOTER LIST */
+        .list-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .list-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface2);
+        }
+        .list-header-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+        .shooter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        .shooter-item:last-child { border-bottom: none; }
+        .shooter-item:hover { background: var(--surface2); }
+        .shooter-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--text);
+        }
+        .shooter-detail {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .shooter-detail .tag {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 0.72rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        .actions { display: flex; align-items: center; gap: 8px; }
+        .score-input {
+            width: 80px;
+            padding: 8px 6px;
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.04em;
+            background: var(--surface2);
+            border: 1px solid var(--blue);
+            color: var(--blue);
+            border-radius: var(--radius);
+        }
+        .score-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(193,39,29,0.22); }
+        .btn-action {
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            transition: all 0.15s;
+            background: transparent;
+        }
+        .btn-edit { color: #b07d10; background: rgba(217,154,28,0.16); }
+        .btn-edit:hover { background: rgba(217,154,28,0.30); }
+        .btn-del { color: var(--red); background: var(--red-dim); }
+        .btn-del:hover { background: rgba(193,39,29,0.22); }
+
+        /* AUTOCOMPLETE */
+        #suggestions {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: none;
+            display: none;
+            position: absolute;
+            z-index: 100;
+            width: 100%;
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+            transition: background 0.15s;
+            color: var(--text-muted);
+        }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background: var(--surface2); color: var(--text); }
+        .suggestion-item b { color: var(--text); font-family: 'Rajdhani', sans-serif; letter-spacing: 0.04em; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .header-title { font-size: 1.15rem; }
+            .shooter-item { flex-wrap: wrap; gap: 10px; }
+            .actions { width: 100%; justify-content: flex-end; }
+        }
+
+        /* LOGIN OVERLAY */
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(74,20,16,0.45);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 34px 30px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+        .login-logo { font-size: 2.4rem; margin-bottom: 10px; }
+        .login-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin: 0 0 4px 0;
+            color: var(--text);
+        }
+        .login-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            letter-spacing: 0.05em;
+        }
+        #loginOverlay input {
+            margin-bottom: 12px;
+        }
+        #loginBtn {
+            background: var(--accent);
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border: none;
+            padding: 13px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.18s;
+        }
+        #loginBtn:hover { background: #a51e16; box-shadow: 0 0 18px rgba(193,39,29,0.30); }
+        .login-error {
+            color: var(--red);
+            font-size: 0.82rem;
+            margin-top: 12px;
+            min-height: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <div class="login-card">
+        <div class="login-logo">🎯</div>
+        <h2 class="login-title" id="loginClub">Saisie — Accès réservé</h2>
+        <p class="login-sub">Connecte-toi pour saisir les résultats</p>
+        <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
+        <input type="password" id="loginPwd" placeholder="Mot de passe" autocomplete="current-password">
+        <button id="loginBtn" onclick="doLogin()">Se connecter</button>
+        <div id="loginError" class="login-error"></div>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <div class="header-left">
+            <div class="header-logo">🎯</div>
+            <div>
+                <h1 class="header-title">Saisie des Résultats</h1>
+                <div class="header-sub" id="clubSub">Ligue Centre-Val de Loire</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span class="version-tag">v2.0</span>
+            <button type="button" id="btnToggleImport" class="btn-toggle-import">
+                <span>🪄</span> Import Excel
+            </button>
+            <a href="index_admin.html" class="link-back">← Retour</a>
+            <a href="#" class="link-back" onclick="doLogout(); return false;">⎋ Déconnexion</a>
+        </div>
+    </header>
+
+    <!-- IMPORT BLOCK -->
+    <div class="panel panel-import" id="importBlock">
+        <div class="panel-title"><span>⚡</span> Importation Rapide — Copier-Coller Excel</div>
+        <div class="import-hint">
+            Copiez vos colonnes depuis Excel et collez-les ci-dessous.<br>
+            <strong>Ordre attendu :</strong> NOM &nbsp;|&nbsp; Prénom &nbsp;|&nbsp; Club &nbsp;|&nbsp; Code Discipline (ex: 250) &nbsp;|&nbsp; Catégorie (ex: Senior 1)
+        </div>
+        <textarea id="importArea" rows="4" placeholder="DUPONT&#9;Jean&#9;ST BEZIERS&#9;250&#9;Senior 1"></textarea>
+        <div class="btn-row" style="margin-top:12px;">
+            <button type="button" class="btn btn-import-run" onclick="processImport()">
+                🚀 Lancer l'importation automatique
+            </button>
+        </div>
+    </div>
+
+    <!-- MANUAL ENTRY FORM -->
+    <div class="panel" id="formTireur">
+        <div class="panel-title"><span>✍️</span> Saisie Manuelle / Retardataires</div>
+
+        <div class="champ-select-wrap">
+            <label>Compétition</label>
+            <select id="typeSelector" onchange="updateMenus()">
+                <option value="TAR">TAR — Tir aux Armes Réglementaires</option>
+                <option value="ISSF10">ISSF 10 mètres</option>
+                <option value="ISSF2550">ISSF 25 & 50 mètres</option>
+                <option value="MLAIC">MLAIC — Armes Anciennes</option>
+                <option value="EDT">EDT — École de Tir</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <input type="hidden" id="editId">
+            <div class="field" style="position:relative;">
+                <label>Nom</label>
+                <input type="text" id="newNom" onkeyup="chercherDansArchive(this.value)" autocomplete="off" placeholder="DUPONT">
+                <div id="suggestions"></div>
+            </div>
+            <div class="field">
+                <label>Prénom</label>
+                <input type="text" id="newPrenom" autocomplete="off" placeholder="Jean">
+            </div>
+            <div class="field">
+                <label>Club</label>
+                <input type="text" id="newClub" autocomplete="off" placeholder="ST BEZIERS">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field">
+                <label>Discipline</label>
+                <select id="newDiscipline" onchange="updateCategories()"></select>
+            </div>
+            <div class="field">
+                <label>Catégorie</label>
+                <select id="newCategorie"></select>
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button type="button" id="btnAdd" class="btn btn-primary" onclick="addShooter()">
+                + Enregistrer le tireur
+            </button>
+            <button type="button" id="btnUpdate" class="btn btn-warning" onclick="saveModification()">
+                ✅ Appliquer les corrections
+            </button>
+            <button type="button" id="btnCancel" class="btn btn-secondary" onclick="resetForm()">
+                ✕ Annuler la modification
+            </button>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+        <input type="text" id="search" placeholder="Filtrer la liste par nom ou prénom…" onkeyup="filterList()">
+    </div>
+
+    <!-- LIST -->
+    <div class="list-container">
+        <div class="list-header">
+            <span class="list-header-label">Tireurs inscrits</span>
+            <span class="list-header-label" style="color: var(--blue);">Score</span>
+        </div>
+        <div id="shooterList">
+            <div class="empty-state">
+                <div class="empty-icon">🎯</div>
+                Aucun tireur enregistré pour cette compétition.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('btnToggleImport').addEventListener('click', function() {
+        var block = document.getElementById('importBlock');
+        if (block.style.display === 'none' || block.style.display === '') {
+            block.style.display = 'block';
+            this.innerHTML = '<span>❌</span> Masquer l\'import';
+            this.classList.add('active');
+        } else {
+            block.style.display = 'none';
+            this.innerHTML = '<span>🪄</span> Import Excel';
+            this.classList.remove('active');
+        }
+    });
+</script>
+
+<script>
+    const dataRef = {
+        TAR: { disc: ["810 - Fusil Répétition manuelle", "811 - Fusils Modifiés Gros Calibre", "812 - Fusils Modifiés Petit Calibre", "813 - Challenges Armes à rép.", "815 - FSA - Gros Calibre", "816 - FSA - Petit Calibre", "820 - Carabine 22 lr", "821 - Carabine 22 semi-auto", "822 - Car. 22lr Assis", "823 - Carabine Match 22lr", "830 - Pistolet / Revolver", "831 - Pistolet Vitesse Réglementaire", "832 - Armes de poing Authentiques"], cats: ["Senior"] },
+        ISSF10: { disc: ["100 - Pistolet 10m", "102 - Pistolet Vitesse 10m", "103 - Pistolet Standard 10m", "104 - Carabine 10m", "107 - Arbalète Match 10m", "109 - Cible Mobile 10m", "110 - Cible Mobile Mixte 10m", "025 - Arbalète Field 18m", "171 - HP R1/R2 Car. 10m", "173 - HP R3 Car. 10m", "174 - HP R4 Car. 10m", "175 - HP R5 Car. 10m", "177 - HP VIS Car. 10m deb.", "178 - HP VIP Car. 10m couchée", "181 - HP P1/P2 Pist. 10m", "183 - HP F5 Pist. Vitesse 10m", "184 - HP P5 Pist. Standard 10m"], cats: ["Minime F", "Minime G", "Cadet F", "Cadet G", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"] },
+        ISSF2550: { disc: ["250 - Pistolet Standard 25m", "251 - Pistolet Percussion Centrale", "252 - Pistolet 25m", "253 - Pistolet Vitesse 25m", "271 - HP - P3 - Pistolet 25m (SH1)", "272 - HP - P4 - Pistolet 50m (SH1)", "273 - HP - F10 Pistolet Standard 25m (SH1)", "500 - Pistolet 50m", "501 - Carabine 60BC", "502 - Carabine 3x20", "571 - HP - R6 Car. 50m 60 BC (SH1)", "572 - HP - R7/R8 Car. 50m 3x20 (SH1) - Mixte", "574 - HP - R9 Car. 50m 60BC Pot. (SH2)", "575 - HP - F12 Car. 50m 3x20 Pot. (SH2)", "576 - HP - F13 Car. 50m 60 BC Pot. (CLF)"], cats: ["Minime F", "Minime G", "Cadet F", "Cadet G", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"] },
+        EDT: { disc: ["101 - Pistolet 3/7 EDT", "150 - Pistolet 10m EDT", "152 - Pistolet Vitesse 10m EDT", "154 - Carabine 10m EDT", "105 - Carabine 3x20 EDT", "158 - Arbalète Field EDT", "150/154 - Combiné EDT", "161 - HP R5 Car. 10m couchée EDT", "162 - HP R3 Car. 10m couchée EDT", "163 - HP P1 Pistolet 10m EDT"], cats: ["Poussin Fille", "Poussin Garçon", "Benjamin Fille", "Benjamin Garçon", "Minime Fille", "Minime Garçon"] },
+        MLAIC: { disc: ["601 - Miquelet Origine", "701 - Miquelet Réplique", "602 - Maximilien Origine", "702 - Maximilien Réplique", "603 - Minié Origine", "703 - Minié Réplique", "604 - Whitworth Origine", "704 - Whitworth Réplique", "605 - Cominazzo Origine", "705 - Cominazzo Réplique", "606 - Kuchenreuter Origine", "706 - Kuchenreuter Réplique", "607 - Colt", "712 - Mariette", "615 - Vetterli Origine", "715 - Vetterli Réplique", "637 - Lamarmora Origine", "737 - Lamarmora Réplique"], cats: ["Senior", "Junior"] }
+    };
+
+    const CONFIG = {
+      clubName: "LIGUE CENTRE-VAL DE LOIRE",
+      clubKey:  "LIGUE_CENTRE_VDL",
+      firebase: {
+        apiKey: "AIzaSyCCxEQPz9ACahpK4qC2-D67IKBEv6mcKHE",
+        authDomain: "resultats-tir-centre.firebaseapp.com",
+        databaseURL: "https://resultats-tir-centre-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "resultats-tir-centre",
+        storageBucket: "resultats-tir-centre.firebasestorage.app",
+        appId: "1:247507218569:web:ea3bdc169dde0f29709658"
+      }
+    };
+    firebase.initializeApp(CONFIG.firebase);
+    const db = firebase.database();
+    const auth = firebase.auth();
+    const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
+    const compId = new URLSearchParams(window.location.search).get('comp');
+
+    document.title = "Saisie — " + CONFIG.clubName;
+    document.getElementById('clubSub').textContent = CONFIG.clubName;
+    document.getElementById('loginClub').textContent = CONFIG.clubName + " · Saisie";
+
+    let shootersData = [];
+    let archiveTireurs = [];
+    let listenersStarted = false;
+
+    // ─── Authentification ───
+    auth.onAuthStateChanged(user => {
+        document.getElementById('loginOverlay').style.display = user ? 'none' : 'flex';
+        if (user && !listenersStarted) {
+            listenersStarted = true;
+            startDataListeners();
+        }
+    });
+
+    function doLogin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pwd = document.getElementById('loginPwd').value;
+        const err = document.getElementById('loginError');
+        err.textContent = 'Connexion...';
+        auth.signInWithEmailAndPassword(email, pwd)
+            .then(() => { err.textContent = ''; })
+            .catch(e => {
+                const map = {
+                    'auth/invalid-email': "Adresse email mal formée.",
+                    'auth/user-not-found': "Aucun compte avec cet email.",
+                    'auth/wrong-password': "Mot de passe incorrect.",
+                    'auth/invalid-credential': "Email ou mot de passe incorrect.",
+                    'auth/missing-password': "Mot de passe manquant.",
+                    'auth/too-many-requests': "Trop de tentatives, réessaie plus tard.",
+                    'auth/network-request-failed': "Problème de réseau.",
+                    'auth/unauthorized-domain': "Domaine non autorisé (Firebase → Auth → Authorized domains)."
+                };
+                err.textContent = (map[e.code] || "Échec de connexion.") + "  [" + e.code + "]";
+            });
+    }
+    function doLogout() { auth.signOut().then(() => location.reload()); }
+
+    document.getElementById('loginPwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+    function startDataListeners() {
+        db.ref('Ligue_Tireurs_Archive').on('value', snap => { archiveTireurs = Object.values(snap.val() || {}); });
+        if (compId) {
+            db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
+                const data = snap.val() || {};
+                shootersData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                renderList(shootersData);
+            });
+        }
+    }
+
+    function updateMenus() {
+        const type = document.getElementById('typeSelector').value;
+        document.getElementById('newDiscipline').innerHTML = dataRef[type].disc.map(d => `<option value="${d}">${d}</option>`).join('');
+        updateCategories();
+    }
+
+    function updateCategories() {
+        const type = document.getElementById('typeSelector').value;
+        const discValue = document.getElementById('newDiscipline').value || "";
+        
+        let cats = dataRef[type].cats; 
+        
+        if (type === "ISSF2550") {
+            if (discValue.match(/^(501|502)/)) {
+                cats = ["Minime F", "Minime G", "Cadet F", "Cadet G", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"];
+            } else if (discValue.match(/^(250|251|252|253|500)/)) {
+                cats = ["Cadet F", "Cadet G", "Junior Fille", "Junior Garçon", "Dame 1", "Dame 2", "Dame 3", "Senior 1", "Senior 2", "Senior 3"];
+            } else if (discValue.match(/^(27|57)/)) {
+                cats = ["Senior 1"]; 
+            }
+        }
+        
+        document.getElementById('newCategorie').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function processImport() {
+        const text = document.getElementById('importArea').value.trim();
+        if (!text) return alert("Veuillez coller des données provenant d'Excel dans la zone.");
+        const lines = text.split('\n');
+        let count = 0;
+        let doublons = 0;
+
+        lines.forEach(line => {
+            const cols = line.split('\t');
+            if (cols.length >= 4) { 
+                let nom = cols[0].trim().toUpperCase();
+                let prenom = cols[1].trim();
+                let club = cols[2].trim() || "-";
+                let rawDisc = cols[3].trim();
+                let cat = cols[4] ? cols[4].trim() : "Senior 1";
+                
+                let fullDisc = rawDisc;
+                for (let type in dataRef) {
+                    let found = dataRef[type].disc.find(d => d.startsWith(rawDisc));
+                    if (found) { fullDisc = found; break; }
+                }
+
+                if (nom && prenom) {
+                    let existeDeja = shootersData.some(s => s.lastName === nom && s.firstName === prenom && s.discipline === fullDisc);
+                    
+                    if (existeDeja) {
+                        doublons++;
+                    } else {
+                        const s = { lastName: nom, firstName: prenom, club: club, discipline: fullDisc, category: cat, score: 0 };
+                        db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
+                        const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
+                        db.ref('Ligue_Tireurs_Archive/' + key).update({ lastName: nom, firstName: prenom, club: club });
+                        count++;
+                    }
+                }
+            }
+        });
+        
+        if (count > 0 || doublons > 0) {
+            let msg = "";
+            if (count > 0) msg += `🚀 Succès ! ${count} engagements ont été importés.\n`;
+            if (doublons > 0) msg += `⚠️ Note : ${doublons} doublons ignorés (déjà inscrits).`;
+            alert(msg);
+            document.getElementById('importArea').value = '';
+            document.getElementById('btnToggleImport').click(); 
+        }
+    }
+
+    function addShooter() {
+        const nom = document.getElementById('newNom').value.toUpperCase().trim();
+        const prenom = document.getElementById('newPrenom').value.trim();
+        const club = document.getElementById('newClub').value.trim() || "-";
+        const disc = document.getElementById('newDiscipline').value;
+        const cat = document.getElementById('newCategorie').value;
+        
+        if (!nom || !prenom) return alert("Nom et Prénom requis");
+
+        let existeDeja = shootersData.some(s => s.lastName === nom && s.firstName === prenom && s.discipline === disc);
+        if (existeDeja) {
+            return alert(`⚠️ IMPOSSIBLE : ${nom} ${prenom} est DÉJÀ inscrit en ${disc}.`);
+        }
+
+        const s = { lastName: nom, firstName: prenom, club: club, discipline: disc, category: cat, score: 0 };
+        db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
+        const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
+        db.ref('Ligue_Tireurs_Archive/' + key).set({ lastName: nom, firstName: prenom, club: club });
+        resetForm();
+    }
+
+    function prepareEdit(id) {
+        const s = shootersData.find(x => x.id === id);
+        document.getElementById('editId').value = id;
+        document.getElementById('newNom').value = s.lastName;
+        document.getElementById('newPrenom').value = s.firstName;
+        document.getElementById('newClub').value = s.club;
+        document.getElementById('btnAdd').style.display = 'none';
+        document.getElementById('btnUpdate').style.display = 'block';
+        document.getElementById('btnCancel').style.display = 'block';
+        document.getElementById('formTireur').classList.add('panel-edit-mode');
+        window.scrollTo(0,0);
+        
+        let foundType = "TAR"; 
+        for (let type in dataRef) {
+            if (dataRef[type].disc.includes(s.discipline)) {
+                foundType = type;
+                break;
+            }
+        }
+        
+        document.getElementById('typeSelector').value = foundType;
+        document.getElementById('newDiscipline').innerHTML = dataRef[foundType].disc.map(d => `<option value="${d}">${d}</option>`).join('');
+        document.getElementById('newDiscipline').value = s.discipline;
+        
+        updateCategories();
+        document.getElementById('newCategorie').value = s.category;
+    }
+
+    function saveModification() {
+        const id = document.getElementById('editId').value;
+        const updates = {
+            lastName: document.getElementById('newNom').value.toUpperCase().trim(),
+            firstName: document.getElementById('newPrenom').value.trim(),
+            club: document.getElementById('newClub').value.trim(),
+            discipline: document.getElementById('newDiscipline').value,
+            category: document.getElementById('newCategorie').value
+        };
+        db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update(updates);
+        resetForm();
+    }
+
+    function deleteShooter(id) {
+        if(confirm("Supprimer ce tireur ?")) { db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).remove(); }
+    }
+
+    function resetForm() {
+        document.getElementById('editId').value = '';
+        document.getElementById('newNom').value = '';
+        document.getElementById('newPrenom').value = '';
+        document.getElementById('newClub').value = '';
+        document.getElementById('btnAdd').style.display = 'block';
+        document.getElementById('btnUpdate').style.display = 'none';
+        document.getElementById('btnCancel').style.display = 'none';
+        document.getElementById('formTireur').classList.remove('panel-edit-mode');
+    }
+
+    function renderList(list) {
+        const cont = document.getElementById('shooterList');
+        if (list.length === 0) {
+            cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div>Aucun tireur enregistré pour cette compétition.</div>`;
+            return;
+        }
+        cont.innerHTML = '';
+        list.sort((a,b) => a.lastName.localeCompare(b.lastName)).forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'shooter-item';
+            div.innerHTML = `
+                <div style="flex:1; min-width:0;">
+                    <div class="shooter-name">${s.lastName} <span style="font-weight:400; color:var(--text-muted)">${s.firstName}</span></div>
+                    <div class="shooter-detail">
+                        <span class="tag">${s.discipline}</span>
+                        <span class="tag" style="border-color:rgba(217,154,28,0.4); color:#b07d10">${s.category}</span>
+                        <span class="tag">${s.club}</span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <input type="number" step="0.1" class="score-input" value="${s.score || 0}" onchange="saveScore('${s.id}', this.value)">
+                    <button type="button" class="btn-action btn-edit" onclick="prepareEdit('${s.id}')">✏️</button>
+                    <button type="button" class="btn-action btn-del" onclick="deleteShooter('${s.id}')">🗑️</button>
+                </div>`;
+            cont.appendChild(div);
+        });
+    }
+
+    function saveScore(id, val) { db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update({ score: parseFloat(val) || 0 }); }
+
+    function chercherDansArchive(val) {
+        const box = document.getElementById('suggestions');
+        if (val.length < 3) { box.style.display = 'none'; return; }
+        const matches = archiveTireurs.filter(t => t.lastName.includes(val.toUpperCase())).slice(0, 5);
+        if (matches.length > 0) {
+            box.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="remplirTireur('${m.lastName}', '${m.firstName}', '${m.club}')"><b>${m.lastName}</b> ${m.firstName} — ${m.club}</div>`).join('');
+            box.style.display = 'block';
+        } else { box.style.display = 'none'; }
+    }
+
+    function remplirTireur(n, p, c) {
+        document.getElementById('newNom').value = n;
+        document.getElementById('newPrenom').value = p;
+        document.getElementById('newClub').value = c;
+        document.getElementById('suggestions').style.display = 'none';
+    }
+
+    function filterList() {
+        const q = document.getElementById('search').value.toLowerCase();
+        renderList(shootersData.filter(s => s.lastName.toLowerCase().includes(q) || s.firstName.toLowerCase().includes(q)));
+    }
+
+    window.onload = updateMenus;
+</script>
+</body>
+</html>

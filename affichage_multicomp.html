@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.0 — 13/07/2026 -->
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palmarès en Direct</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary-bordeaux: #4a2c40; 
+            --bg-pastel: #f8fafc;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-pastel);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--primary-bordeaux);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(74, 44, 64, 0.15);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .header-logo {
+            height: 75px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .header-center {
+            text-align: center;
+            flex: 1;
+        }
+
+        .header-center h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .version-tag {
+            font-size: 0.65em;
+            opacity: 0.7;
+            margin-top: -3px;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+
+        .comp-name {
+            margin-top: 5px;
+            font-size: 1.1rem;
+            color: #ffb8d9;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        #resultsContainer {
+            padding-bottom: 60vh; 
+        }
+
+        .discipline-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edf2f7;
+        }
+
+        .discipline-title {
+            color: #c0442a;
+            border-bottom: none;
+            padding: 15px 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            position: sticky;
+            top: 145px; 
+            background: #fde8e0;
+            border-radius: 8px;
+            padding-left: 18px;
+            border-left: 6px solid #e8724a;
+            border-bottom: none;
+            z-index: 90; 
+            box-shadow: 0 10px 10px -10px rgba(0,0,0,0.1);
+        }
+
+        .category-block {
+            margin-bottom: 25px;
+        }
+
+        /* === SEUL CHANGEMENT : couleur rose/bordeaux sur les bandeaux catégorie === */
+        .category-title {
+            background: #f3e6f0;
+            color: #6d1f4e;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            width: fit-content;
+            border-left: 4px solid #9b3272;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 1.1rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rank-cell {
+            font-weight: 800;
+            width: 50px;
+            color: var(--text-light);
+        }
+
+        tr:nth-child(1) .rank-cell { color: #d97706; font-size: 1.3rem; }
+        tr:nth-child(2) .rank-cell { color: #475569; font-size: 1.2rem; }
+        tr:nth-child(3) .rank-cell { color: #b45309; font-size: 1.15rem; }
+
+        .name-cell { font-weight: 600; }
+        .club-cell { color: var(--text-light); }
+
+        .score-cell {
+            text-align: right;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary-bordeaux);
+            width: 100px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
+        <div class="header-center">
+            <h1>🏆 PALMARÈS PROVISOIRE</h1>
+            <div class="version-tag">v1.0</div>
+            <div id="compTitle" class="comp-name">Chargement...</div>
+        </div>
+        <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
+    </header>
+
+    <div id="resultsContainer">
+        <div class="no-data">Connexion au serveur de résultats en cours...</div>
+    </div>
+</div>
+
+<script>
+    const CONFIG = {
+      clubName: "LIGUE CENTRE-VAL DE LOIRE",
+      clubKey:  "LIGUE_CENTRE_VDL",
+      firebase: {
+        apiKey: "AIzaSyCCxEQPz9ACahpK4qC2-D67IKBEv6mcKHE",
+        authDomain: "resultats-tir-centre.firebaseapp.com",
+        databaseURL: "https://resultats-tir-centre-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "resultats-tir-centre",
+        storageBucket: "resultats-tir-centre.firebasestorage.app",
+        appId: "1:247507218569:web:ea3bdc169dde0f29709658"
+      }
+    };
+
+    firebase.initializeApp(CONFIG.firebase);
+    const db = firebase.database();
+    const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
+    const compId = new URLSearchParams(window.location.search).get('comp');
+
+    document.title = "🏆 " + CONFIG.clubName + " — Palmarès en Direct";
+    document.querySelectorAll('.header-logo').forEach(img => { img.alt = "Logo " + CONFIG.clubName; });
+
+    if (!compId) {
+        document.getElementById('resultsContainer').innerHTML = `<div class="no-data" style="color:red; font-weight:bold;">⚠️ Erreur : Aucune compétition spécifiée.</div>`;
+    } else {
+        db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
+            const config = snap.val();
+            document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
+        });
+
+        db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
+            const data = snap.val() || {};
+            const shooters = Object.keys(data).map(key => data[key]);
+
+            if (shooters.length === 0) {
+                document.getElementById('resultsContainer').innerHTML = `<div class="no-data">Aucun tireur enregistré pour le moment.</div>`;
+                return;
+            }
+
+            const tree = {};
+            shooters.forEach(s => {
+                let disc = s.discipline ? s.discipline.trim() : "Sans Discipline";
+                let cat = s.category ? s.category.trim() : "Général";
+                if(cat.length > 0) {
+                    cat = cat.charAt(0).toUpperCase() + cat.slice(1);
+                }
+                if (!tree[disc]) tree[disc] = {};
+                if (!tree[disc][cat]) tree[disc][cat] = [];
+                tree[disc][cat].push(s);
+            });
+
+            let html = '';
+            const sortedDisciplines = Object.keys(tree).sort();
+
+            sortedDisciplines.forEach(disc => {
+                html += `<div class="discipline-section">`;
+                html += `<h2 class="discipline-title">🎯 ${disc}</h2>`;
+
+                const sortedCategories = Object.keys(tree[disc]).sort();
+
+                sortedCategories.forEach(cat => {
+                    html += `<div class="category-block">`;
+                    html += `<div class="category-title">👥 ${cat}</div>`;
+                    html += `<table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Pl.</th>
+                                        <th>Nom Prénom</th>
+                                        <th>Club</th>
+                                        <th style="text-align: right; width: 100px;">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                    const rankedShooters = tree[disc][cat].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+                    rankedShooters.forEach((s, index) => {
+                        const displayScore = s.score !== undefined ? s.score : 0;
+                        const medal = (index === 0) ? "🥇 " : (index === 1) ? "🥈 " : (index === 2) ? "🥉 " : "";
+                        html += `<tr>
+                                    <td class="rank-cell">${index + 1}</td>
+                                    <td class="name-cell">${medal}${s.lastName} ${s.firstName}</td>
+                                    <td class="club-cell">${s.club || '-'}</td>
+                                    <td class="score-cell">${displayScore}</td>
+                                 </tr>`;
+                    });
+                    html += `</tbody></table></div>`;
+                });
+                html += `</div>`;
+            });
+
+            document.getElementById('resultsContainer').innerHTML = html;
+        });
+    }
+
+    let isScrolling = true;
+    
+    function startAutoScroll() {
+        setInterval(() => {
+            if (isScrolling) {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+                    isScrolling = false; 
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setTimeout(() => { isScrolling = true; }, 2000);
+                    }, 3000); 
+                } else {
+                    window.scrollBy(0, 1);
+                }
+            }
+        }, 20);
+    }
+
+    setTimeout(startAutoScroll, 4000);
+</script>
+</body>
+</html>
