@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
   <style>
-    :root {
+    /* :root {
       --sidebar-bg: #5B8FB9;
       --sidebar-border: #4A90E2;
       --sidebar-accent: #ffffff;
@@ -33,6 +33,26 @@
       --radius: 8px;
       --radius-lg: 16px;
       --radius-xl: 22px;
+    } */
+
+    :root {
+      /* Barre latérale (Sidebar) coordonnée */
+      --sidebar-bg: #1E40AF;       /* Bleu Royal identique à l'accent principal */
+      --sidebar-border: #1D4ED8;   /* Bleu Royal légèrement plus soutenu */
+      --sidebar-accent: #3B82F6;   /* Bleu vif pour les éléments actifs */
+      
+      /* Corps de la page */
+      --bg: #F8FAFC;               /* Même fond clair que la page de saisie */
+      --surface: #FFFFFF;          /* Cartes de compétitions blanches */
+      --border: #E2E8F0;           /* Bordures coordonnées */
+      
+      /* Typographie */
+      --text-main: #0F172A;        /* Ardoise foncé */
+      --text-muted: #64748B;       /* Gris secondaire */
+      
+      /* Actions */
+      --danger: #EF4444;           /* Rouge pour les suppressions */
+      --radius: 8px;
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -145,8 +165,8 @@
       font-weight: 700;
       letter-spacing: 0.08em;
       color: var(--accent);
-      background: #fdf1e8;
-      border: 1px solid #f3dcc4;
+      background: #b0caf5;
+      border: 1px solid #1D4ED8;
       padding: 6px 16px;
       border-radius: 20px;
     }
@@ -435,7 +455,7 @@
     <div class="logo-area">
       <img src="logo.png" id="clubLogo"
            onerror="this.style.display='none'" alt="Logo du club">
-      <span id="clubNameDisplay"></span>
+      <div><span id="clubNameDisplay"></span></div>
     </div>
     <button class="btn-create" onclick="openCreateModal()">+ Nouvelle Compétition</button>
     <button class="btn-logout" onclick="doLogout()" style="margin-top:auto;">⎋ Déconnexion</button>

@@ -11,25 +11,30 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <style>
         :root {
-            --bg: #fdf6ee;
-            --surface: #ffffff;
-            --surface2: #f8f1e7;
-            --border: #efe2d2;
-            --border-active: #4A90E2;
-            --accent: #4A90E2;
-            --accent2: #d99a1c;
-            --accent-dim: rgba(193,39,29,0.10);
-            --text: #2a1410;
-            --text-muted: #9a7264;
-            --text-dim: #a8927d;
-            --blue: #4A90E2;
-            --blue-dim: rgba(193,39,29,0.10);
-            --red: #4A90E2;
-            --red-dim: rgba(193,39,29,0.10);
-            --warning: #d99a1c;
-            --warning-dim: rgba(217,154,28,0.14);
+            /* Arrière-plans et surfaces harmonisés */
+            --bg: #F8FAFC;             /* Fond général de la page (frais et clair) */
+            --surface: #FFFFFF;        /* Fonds des blocs et cartes */
+            --surface2: #F1F5F9;       /* Fonds secondaires (inputs de score, lignes alternées) */
+            
+            /* Bordures et États */
+            --border: #E2E8F0;         /* Bordure subtile par défaut */
+            --border-active: #3B82F6;  /* Bordure active (Bleu vif au survol/focus) */
+            
+            /* Accents et Identité */
+            --accent: #1E40AF;         /* Bleu Royal principal (Boutons, titres) */
+            --accent2: #F59E0B;        /* Accent secondaire (pour les mouches ou alertes) */
+            --accent-dim: rgba(59, 130, 246, 0.1);
+            --blue: #3B82F6;           /* Rappel bleu vif */
+            
+            /* Typographie */
+            --text: #0F172A;           /* Ardoise foncé pour une excellente lisibilité */
+            --text-dim: #64748B;       /* Texte secondaire estompé */
+            
+            /* Statuts universels */
+            --success: #10B981;
+            --danger: #EF4444;
+            
             --radius: 8px;
-            --radius-lg: 12px;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -371,6 +376,55 @@
         .btn-del { color: var(--red); background: var(--red-dim); }
         .btn-del:hover { background: rgba(193,39,29,0.22); }
 
+        /* ALIGNEMENT DES SCORES SUR UNE LIGNE */
+        .scores-grid {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .score-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .score-box span {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            font-weight: 700;
+        }
+        .score-box input, .score-box select {
+            width: 60px;
+            padding: 6px 4px;
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface2);
+            color: var(--blue);
+            transition: all 0.2s;
+        }
+        .score-box select { width: 85px; color: var(--text); }
+        .score-box input:focus, .score-box select:focus {
+            border-color: var(--blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+        }
+        .actions-block {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 10px;
+        }
+        .shooter-info { flex: 1; min-width: 200px; }
+
         /* AUTOCOMPLETE */
         #suggestions {
             background: var(--surface);
@@ -534,12 +588,14 @@
         </div>
         <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 15px; width: 100%;">
         <div class="btn-row">
-            <button type="button" class="btn btn-import-run" onclick="processCSVImport()">
+            <button type="button" class="btn btn-import-run" onclick="triggerCSVImport()">
                 🚀 Lancer l'importation du fichier CSV
             </button>
         </div>
         <!-- Message de traitement en cours -->
-        <div id="importLoader">⏳ Traitement et synchronisation de l'importation en cours, veuillez patienter...</div>
+        <div id="importLoader" style="display: none; margin-top: 15px; padding: 12px; background: #f0f9ff; border: 1px solid #4A90E2; border-radius: 8px; color: #4A90E2; font-weight: 700; text-align: center;">
+            ⏳ Traitement et synchronisation de l'importation en cours, veuillez patienter...
+        </div>
     </div>
 
     <!-- MANUAL ENTRY FORM -->
@@ -549,11 +605,11 @@
         <div class="champ-select-wrap">
             <label>Compétition</label>
             <select id="typeSelector" onchange="updateMenus()">
-                <option value="TAR">TAR — Tir aux Armes Réglementaires</option>
                 <option value="ISSF10">ISSF 10 mètres</option>
                 <option value="ISSF2550">ISSF 25 & 50 mètres</option>
-                <option value="MLAIC">MLAIC — Armes Anciennes</option>
                 <option value="EDT">EDT — École de Tir</option>
+                <option value="TAR">TAR — Tir aux Armes Réglementaires</option>
+                <option value="MLAIC">MLAIC — Armes Anciennes</option>
             </select>
         </div>
 
@@ -774,8 +830,6 @@
         const fileInput = document.getElementById('csvFileInput');
         const file = fileInput.files[0];
         const loader = document.getElementById('importLoader');
-        
-        // if (!file) return alert("Veuillez sélectionner un fichier CSV au préalable.");
 
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -826,6 +880,7 @@
                     if (colPos !== -1 && cols[colPos] && cols[colPos].trim() !== "") {
                         let valSerie = parseFloat(cols[colPos].trim().replace(',', '.'));
                         if (!isNaN(valSerie)) {
+                            valSerie = Math.round(valSerie * 10) / 10;
                             series.push(valSerie);
                             totalScore += valSerie;
                             hasScores = true;
@@ -963,7 +1018,7 @@
         let status = s.status || "OK";
 
         if(typeField === 'serie') {
-            series[index] = parseFloat(value) || 0;
+            series[index] = Math.round(parseFloat(value) * 10) / 10 || 0;
         } else if(typeField === 'mouches') {
             mouches = parseInt(value, 10) || 0;
         } else if(typeField === 'status') {
@@ -980,7 +1035,7 @@
             series: series,
             mouches: mouches,
             status: status,
-            score: parseFloat(total.toFixed(2))
+            score: Math.round(parseFloat(total) * 10) / 10
         });
     }
 
