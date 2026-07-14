@@ -100,6 +100,37 @@
             text-transform: uppercase;
         }
 
+        .sync-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+            margin-top: 4px;
+            text-transform: none;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-light);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .sync-status.is-online .sync-dot {
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+        }
+
+        .sync-status.is-offline .sync-dot {
+            background: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+        }
+
         #resultsContainer {
             padding-bottom: 60vh;
         }
@@ -638,6 +669,10 @@
                 <h1>PALMARÈS PROVISOIRE</h1>
                 <div class="version-tag">v2.0</div>
                 <div id="compTitle" class="comp-name">Chargement...</div>
+                <div class="sync-status" id="syncStatus">
+                    <span class="sync-dot"></span>
+                    <span id="syncStatusText">Connexion en cours…</span>
+                </div>
             </div>
             <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
         </header>
@@ -704,6 +739,34 @@
 
         let scrollSpeed = parseInt(urlParams.get('speed')) || 20;
         let scrollIntervalId = null;
+
+        // ─── Statut de connexion & horodatage de dernière mise à jour ───
+        const syncStatusEl = document.getElementById('syncStatus');
+        const syncStatusTextEl = document.getElementById('syncStatusText');
+
+        let isConnectedState = false;
+        let lastUpdatedTimestamp = null;
+
+        function formatLastUpdated(timestamp) {
+            if (!timestamp) return "dernière mise à jour : —";
+            const d = new Date(timestamp);
+            return "dernière mise à jour : " + d.toLocaleDateString('fr-FR') + " à " + d.toLocaleTimeString('fr-FR');
+        }
+
+        function renderSyncStatus() {
+            syncStatusEl.classList.toggle('is-online', isConnectedState);
+            syncStatusEl.classList.toggle('is-offline', !isConnectedState);
+            const connLabel = isConnectedState ? "Connecté" : "Hors ligne — reconnexion…";
+            syncStatusTextEl.textContent = connLabel + " · " + formatLastUpdated(lastUpdatedTimestamp);
+        }
+
+        db.ref('.info/connected').on('value', snap => {
+            isConnectedState = (snap.val() === true);
+            renderSyncStatus();
+        });
+
+        // Rafraîchit l'heure affichée toutes les 30 secondes même sans nouvelle donnée
+        setInterval(renderSyncStatus, 30000);
 
         document.title = "Palmarès en Direct - " + CONFIG.clubName;
         document.querySelectorAll('.header-logo').forEach(img => { img.alt = "Logo " + CONFIG.clubName; });
@@ -827,6 +890,9 @@
                 document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
                 requestAnimationFrame(updateStickyOffsets);
 
+                lastUpdatedTimestamp = config && config.lastUpdated ? config.lastUpdated : null;
+                renderSyncStatus();
+
                 if (config && config.scrollSpeed !== undefined) {
                     const dbSpeed = parseInt(config.scrollSpeed);
                     if (!isNaN(dbSpeed) && !urlParams.has('speed')) { // L'URL reste prioritaire si spécifiée
@@ -936,10 +1002,10 @@
 
                             // Couleur du texte de la place selon le statut (uniquement la cellule "Pl.")
                             const statusRankColors = {
-                                DNF: "#e6a817", // jaune/orange
-                                DNS: "#8a8f98", // gris
-                                HM:  "#1d3557", // bleu foncé
-                                DSQ: "#c0392b"  // rouge
+                                DNF: "#f57627", // orange
+                                DNS: "#adafb3", // gris
+                                HM:  "#0f366e", // bleu foncé
+                                DSQ: "#992518"  // rouge
                             };
                             const rankCellStyle = `text-align: center; font-weight: bold;${statusRankColors[status] ? ` color:${statusRankColors[status]};` : ''}`;
 

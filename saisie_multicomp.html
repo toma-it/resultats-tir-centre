@@ -121,6 +121,35 @@
             margin-top: 4px;
         }
 
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .sync-status.is-online .sync-dot {
+            background: var(--success);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
+        }
+
+        .sync-status.is-offline .sync-dot {
+            background: var(--danger);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+        }
+
         .header-actions {
             display: flex;
             align-items: center;
@@ -855,6 +884,10 @@
                     <h1 class="header-title">Saisie des Résultats</h1>
                     <div class="header-sub" id="clubSub">Ligue Centre-Val de Loire</div>
                     <div class="comp-name" id="compTitle">Chargement de la compétition...</div>
+                    <div class="sync-status" id="syncStatus">
+                        <span class="sync-dot"></span>
+                        <span id="syncStatusText">Connexion en cours…</span>
+                    </div>
                 </div>
             </div>
             <div class="header-actions">
@@ -1049,6 +1082,38 @@
         const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
         const compId = new URLSearchParams(window.location.search).get('comp');
 
+        // ─── Statut de connexion & horodatage de dernière mise à jour ───
+        // Utilise le nœud spécial Firebase ".info/connected", disponible même sans authentification.
+        const syncStatusEl = document.getElementById('syncStatus');
+        const syncStatusTextEl = document.getElementById('syncStatusText');
+
+        let isConnectedState = false;
+        let lastUpdatedTimestamp = null;
+
+        function renderSyncStatus() {
+            syncStatusEl.classList.toggle('is-online', isConnectedState);
+            syncStatusEl.classList.toggle('is-offline', !isConnectedState);
+            const connLabel = isConnectedState ? "Connecté" : "Hors ligne — reconnexion…";
+            syncStatusTextEl.textContent = connLabel + " · " + formatLastUpdated(lastUpdatedTimestamp);
+        }
+
+        db.ref('.info/connected').on('value', snap => {
+            isConnectedState = (snap.val() === true);
+            renderSyncStatus();
+        });
+
+        function formatLastUpdated(timestamp) {
+            if (!timestamp) return "dernière mise à jour : —";
+            const d = new Date(timestamp);
+            return "dernière mise à jour : " + d.toLocaleDateString('fr-FR') + " à " + d.toLocaleTimeString('fr-FR');
+        }
+
+        // Marque l'horodatage de dernière mise à jour des données (date/heure uniquement, pas d'auteur)
+        function touchLastUpdated() {
+            if (!compId) return;
+            db.ref(CLUB_PATH + '/' + compId + '/config/lastUpdated').set(firebase.database.ServerValue.TIMESTAMP);
+        }
+
         document.title = "Saisie - " + CONFIG.clubName;
         document.getElementById('clubSub').textContent = CONFIG.clubName;
         document.getElementById('loginClub').textContent = CONFIG.clubName + " · Saisie";
@@ -1109,6 +1174,8 @@
             db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
                 const config = snap.val();
                 document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours (nom non renseigné)";
+                lastUpdatedTimestamp = config && config.lastUpdated ? config.lastUpdated : null;
+                renderSyncStatus();
             });
 
             db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
@@ -1331,6 +1398,7 @@
                 }
 
                 loader.style.display = "none";
+                if (countInscriptions > 0 || countScores > 0) touchLastUpdated();
                 alert(`📊 Rapport d'importation :\n- ${countInscriptions} nouveaux tireurs engagés.\n- ${countScores} fiches de scores mises à jour.`);
                 fileInput.value = "";
             };
@@ -1353,6 +1421,7 @@
 
             const s = { lastName: nom, firstName: prenom, club: club, discipline: disc, category: cat, score: 0 };
             db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
+            touchLastUpdated();
             const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
             db.ref('Ligue_Tireurs_Archive/' + key).set({ lastName: nom, firstName: prenom, club: club });
             resetForm();
@@ -1396,11 +1465,15 @@
                 category: document.getElementById('newCategorie').value
             };
             db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update(updates);
+            touchLastUpdated();
             resetForm();
         }
 
         function deleteShooter(id) {
-            if (confirm("Supprimer ce tireur ?")) { db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).remove(); }
+            if (confirm("Supprimer ce tireur ?")) {
+                db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).remove();
+                touchLastUpdated();
+            }
         }
 
         function resetForm() {
@@ -1444,6 +1517,7 @@
                 status: status,
                 score: Math.round(parseFloat(total) * 10) / 10
             });
+            touchLastUpdated();
         }
 
         function renderList(list) {
