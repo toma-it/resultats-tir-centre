@@ -934,6 +934,15 @@
 
                             const displayRank = takesRank ? rankCounter++ : status;
 
+                            // Couleur du texte de la place selon le statut (uniquement la cellule "Pl.")
+                            const statusRankColors = {
+                                DNF: "#e6a817", // jaune/orange
+                                DNS: "#8a8f98", // gris
+                                HM:  "#1d3557", // bleu foncé
+                                DSQ: "#c0392b"  // rouge
+                            };
+                            const rankCellStyle = `text-align: center; font-weight: bold;${statusRankColors[status] ? ` color:${statusRankColors[status]};` : ''}`;
+
                             // Arrondi à 1 décimale ou affichage "-" (uniquement DNS/DSQ, sans résultat)
                             const displayScore = hasResult ? (s.score !== undefined ? (Math.round(s.score * 10) / 10) : 0) : "-";
 
@@ -956,7 +965,7 @@
                             }
 
                             html += `<tr>
-                                    <td class="rank-cell" style="text-align: center; font-weight: bold;">${displayRank}</td>
+                                    <td class="rank-cell" style="${rankCellStyle}">${displayRank}</td>
                                     <td class="name-cell">${medal}${s.lastName} ${s.firstName}</td>
                                     <td class="club-cell">${s.club || '-'}</td>
                                     <td style="text-align: center;">${seriesDisplay}</td>
