@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.5 — 13/07/2026 -->
+<!-- LIGUE CENTRE-VAL DE LOIRE — version v2.0 — 14/07/2026 -->
 <html lang="fr">
 
 <head>
@@ -495,6 +495,18 @@
             background: var(--surface2);
         }
 
+        .shooter-item.status-dns,
+        .shooter-item.status-dsq {
+            border-left: 4px solid var(--danger, #d9534f);
+            background: rgba(217, 83, 79, 0.06);
+        }
+
+        .shooter-item.status-hm,
+        .shooter-item.status-dnf {
+            border-left: 4px solid #d99a1c;
+            background: rgba(217, 154, 28, 0.06);
+        }
+
         .shooter-name {
             font-family: 'Rajdhani', sans-serif;
             font-size: 1rem;
@@ -846,7 +858,7 @@
                 </div>
             </div>
             <div class="header-actions">
-                <span class="version-tag">v1.5</span>
+                <span class="version-tag">v2.0</span>
                 <button type="button" id="btnToggleImport" class="btn-toggle-import">
                     <span>🪄</span> Import CSV
                 </button>
@@ -976,7 +988,7 @@
                     "816 - FSA - Petit Calibre", "820 - Carabine 22 lr", "821 - Carabine 22 semi-auto", "822 - Car. 22lr Assis", "823 - Carabine Match 22lr", "830 - Pistolet / Revolver",
                     "831 - Pistolet Vitesse Réglementaire", "832 - Armes de poing Authentiques"
                 ],
-                cats: ["Senior"]
+                cats: ["Senior 1"]
             },
             ISSF10: {
                 disc: [
@@ -1252,6 +1264,8 @@
                     let status = "OK";
                     if (placeStr === "DNS") status = "DNS";
                     if (placeStr === "DSQ") status = "DSQ";
+                    if (placeStr === "HM") status = "HM";
+                    if (placeStr === "DNF") status = "DNF";
 
                     // Gestion des Séries (S1 à S6)
                     let series = [];
@@ -1291,6 +1305,10 @@
 
                     const fallbackSeries = Array(getSeriesCount(fullDisc)).fill(0);
 
+                    // Seuls les DNS et DSQ n'ont pas de résultat exploitable (score neutralisé à 0).
+                    // Les HM (Hors Match) et DNF (Abandon) conservent leur score réellement réalisé.
+                    const zeroesScore = (status === "DNS" || status === "DSQ");
+
                     let shooterPayload = {
                         lastName: nom,
                         firstName: prenom,
@@ -1298,9 +1316,9 @@
                         discipline: fullDisc,
                         category: cat,
                         status: status,
-                        score: status !== "OK" ? 0 : (hasScores ? Math.round(totalScore * 10) / 10 : (existingShooter ? (existingShooter.score || 0) : 0)),
-                        series: status !== "OK" ? fallbackSeries : (hasScores ? series : (existingShooter && existingShooter.series ? existingShooter.series : fallbackSeries)),
-                        mouches: status !== "OK" ? 0 : (hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0))
+                        score: zeroesScore ? 0 : (hasScores ? Math.round(totalScore * 10) / 10 : (existingShooter ? (existingShooter.score || 0) : 0)),
+                        series: zeroesScore ? fallbackSeries : (hasScores ? series : (existingShooter && existingShooter.series ? existingShooter.series : fallbackSeries)),
+                        mouches: zeroesScore ? 0 : (hasScores ? mouches : (existingShooter ? (existingShooter.mouches || 0) : 0))
                     };
 
                     if (existingShooter) {
@@ -1413,9 +1431,10 @@
                 status = value;
             }
 
-            // Si DNS ou DSQ, le score repasse fictivement à 0
+            // Si DNS ou DSQ, le score repasse fictivement à 0 (pas de résultat exploitable)
+            // Pour HM (Hors Match) et DNF (Abandon), le score réalisé est conservé
             let total = 0;
-            if (status === "OK") {
+            if (status !== "DNS" && status !== "DSQ") {
                 total = series.reduce((acc, curr) => acc + curr, 0);
             }
 
@@ -1442,9 +1461,15 @@
 
                 const currentStatus = s.status || "OK";
 
+                // Seuls DNS et DSQ verrouillent la saisie des scores (pas de résultat exploitable).
+                // HM (Hors Match) et DNF (Abandon) gardent un score réellement saisissable.
+                const scoreLocked = (currentStatus === "DNS" || currentStatus === "DSQ");
+
                 let statusClass = "";
                 if (currentStatus === "DNS") statusClass = "status-dns";
                 if (currentStatus === "DSQ") statusClass = "status-dsq";
+                if (currentStatus === "HM") statusClass = "status-hm";
+                if (currentStatus === "DNF") statusClass = "status-dnf";
 
                 const div = document.createElement('div');
                 div.className = `shooter-item ${statusClass}`;
@@ -1455,7 +1480,7 @@
                     seriesHtml += `
                     <div class="score-box">
                         <span>S${i + 1}</span>
-                        <input type="number" step="0.1" value="${series[i] !== undefined ? series[i] : 0}" ${currentStatus !== 'OK' ? 'disabled' : ''} onchange="saveAdvancedScore('${s.id}', 'serie', ${i}, this.value)">
+                        <input type="number" step="0.1" value="${series[i] !== undefined ? series[i] : 0}" ${scoreLocked ? 'disabled' : ''} onchange="saveAdvancedScore('${s.id}', 'serie', ${i}, this.value)">
                     </div>
                 `;
                 }
@@ -1476,6 +1501,8 @@
                         <span>Statut</span>
                         <select onchange="saveAdvancedScore('${s.id}', 'status', 0, this.value)">
                             <option value="OK" ${currentStatus === 'OK' ? 'selected' : ''}>Présent</option>
+                            <option value="HM" ${currentStatus === 'HM' ? 'selected' : ''}>Hors Match</option>
+                            <option value="DNF" ${currentStatus === 'DNF' ? 'selected' : ''}>DNF (Abandon)</option>
                             <option value="DNS" ${currentStatus === 'DNS' ? 'selected' : ''}>DNS</option>
                             <option value="DSQ" ${currentStatus === 'DSQ' ? 'selected' : ''}>DSQ</option>
                         </select>
@@ -1486,13 +1513,13 @@
                     
                     <div class="score-box">
                         <span>Mouches</span>
-                        <input type="number" value="${s.mouches || 0}" ${currentStatus !== 'OK' ? 'disabled' : ''} onchange="saveAdvancedScore('${s.id}', 'mouches', 0, this.value)">
+                        <input type="number" value="${s.mouches || 0}" ${scoreLocked ? 'disabled' : ''} onchange="saveAdvancedScore('${s.id}', 'mouches', 0, this.value)">
                     </div>
                 </div>
 
                 <div class="score-box" style="min-width:70px; text-align:center;">
                     <span style="font-size:0.75em; font-weight:bold; color:var(--primary);">TOTAL</span>
-                    <div style="font-size:1.3em; font-weight:800; color:var(--primary);">${currentStatus !== 'OK' ? currentStatus : (s.score !== undefined ? Math.round(s.score * 10) / 10 : 0)}</div>
+                    <div style="font-size:1.3em; font-weight:800; color:var(--primary);">${scoreLocked ? currentStatus : (s.score !== undefined ? Math.round(s.score * 10) / 10 : 0)}</div>
                 </div>
 
                 <div class="actions-block">

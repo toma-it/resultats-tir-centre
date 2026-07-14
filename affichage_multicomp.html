@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LIGUE CENTRE-VAL DE LOIRE — version v1.5 — 13/07/2026 -->
+<!-- LIGUE CENTRE-VAL DE LOIRE — version v2.0 — 14/07/2026 -->
 <html lang="fr">
 
 <head>
@@ -636,7 +636,7 @@
             <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
             <div class="header-center">
                 <h1>PALMARÈS PROVISOIRE</h1>
-                <div class="version-tag">v1.5</div>
+                <div class="version-tag">v2.0</div>
                 <div id="compTitle" class="comp-name">Chargement...</div>
             </div>
             <img src="logo.png" alt="Logo Ligue Centre-Val de Loire" class="header-logo">
@@ -885,9 +885,13 @@
                             const statusA = a.status || "OK";
                             const statusB = b.status || "OK";
 
-                            // RÈGLE : Renvoyer les DNS et DSQ tout en bas du classement
-                            if (statusA !== "OK" && statusB === "OK") return 1;
-                            if (statusA === "OK" && statusB !== "OK") return -1;
+                            // RÈGLE : Seuls les DNS et DSQ sont renvoyés tout en bas du classement.
+                            // Les HM (Hors Match) et DNF (Abandon) ont un score réel et restent
+                            // classés à leur place naturelle parmi les autres tireurs.
+                            const excludedA = (statusA === "DNS" || statusA === "DSQ");
+                            const excludedB = (statusB === "DNS" || statusB === "DSQ");
+                            if (excludedA && !excludedB) return 1;
+                            if (!excludedA && excludedB) return -1;
 
                             // 1. Tri par Score global
                             const scoreA = a.score || 0;
@@ -916,23 +920,32 @@
                         let rankCounter = 1;
 
                         rankedShooters.forEach((s, index) => {
-                            const isOk = (!s.status || s.status === "OK" || s.status === "");
+                            const status = s.status || "OK";
 
-                            // Si le tireur est DNS/DSQ, on l'affiche ainsi, sinon on lui donne son rang et on incrémente
-                            const displayRank = isOk ? rankCounter++ : s.status;
+                            // Un tireur a un résultat exploitable (score/séries/mouches réels)
+                            // pour tous les statuts sauf DNS et DSQ.
+                            const hasResult = (status !== "DNS" && status !== "DSQ");
 
-                            // Arrondi à 1 décimale ou affichage "-" (DNS/DSQ)
-                            const displayScore = isOk ? (s.score !== undefined ? (Math.round(s.score * 10) / 10) : 0) : "-";
+                            // Seuls les tireurs "Présent" (OK) comptent pour la numérotation des places.
+                            // HM (Hors Match) et DNF (Abandon) sont classés à leur position naturelle
+                            // (selon leur score) mais "sautent" leur place : le tireur suivant récupère
+                            // le numéro qui aurait dû leur revenir.
+                            const takesRank = (status === "OK");
+
+                            const displayRank = takesRank ? rankCounter++ : status;
+
+                            // Arrondi à 1 décimale ou affichage "-" (uniquement DNS/DSQ, sans résultat)
+                            const displayScore = hasResult ? (s.score !== undefined ? (Math.round(s.score * 10) / 10) : 0) : "-";
 
                             // Les médailles ne s'appliquent que si la personne a une vraie place numérique
                             const medal = (displayRank === 1) ? "🥇 " : (displayRank === 2) ? "🥈 " : (displayRank === 3) ? "🥉 " : "";
 
-                            // Pas de mouches affichées pour les DNS/DSQ
-                            const suffixeMouches = (s.mouches > 0 && isOk) ? ` <small style="color:var(--text-light); font-weight:normal;"> /${s.mouches}x</small>` : "";
+                            // Pas de mouches affichées pour les DNS/DSQ (pas de résultat)
+                            const suffixeMouches = (s.mouches > 0 && hasResult) ? ` <small style="color:var(--text-light); font-weight:normal;"> /${s.mouches}x</small>` : "";
 
                             let seriesDisplay = "-";
 
-                            if (isOk) {
+                            if (hasResult) {
                                 // On récupère le nombre de séries attendues par rapport à l'épreuve
                                 const expectedCount = s.series ? s.series.length : getSeriesCount(s.discipline);
                                 const currentSeries = s.series || Array(expectedCount).fill(0);
